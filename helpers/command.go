@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net"
+	"strings"
 )
 
 type PjRequest struct {
@@ -42,11 +43,17 @@ func PjlinkRequest(address, port, class, pwd, command, param string) (PjResponse
 }
 
 func parseResponse(response string) PjResponse {
-	//example response: "%1POWR=0"
+	//if password is wrong, response will be 'PJLINK ERRA'
 	fmt.Println(response)
-	//params are class, command, and response code, respectively
-	parsedResponse := PjResponse{response[1:2], response[2:6], response[7:len(response)]}
-	return parsedResponse
+	if strings.Contains(response, "ERRA") {
+		return PjResponse{"0", "ERRA", "0"}
+	} else {
+		//example response: "%1POWR=0"
+		fmt.Println(response)
+		//params are class, command, and response code, respectively
+		return PjResponse{response[1:2], response[2:6], response[7:len(response)]}
+	}
+
 }
 
 func sendRequest(request PjRequest) string {
@@ -84,6 +91,11 @@ func sendRequest(request PjRequest) string {
 	pjConn.Write([]byte(strCmd + "\r"))
 
 	scanner.Scan()
+
+	//if authentication failed, we received 'PJLINK ERRA', so return 'ERRA'
+	if scanner.Text() == "PJLINK" {
+		scanner.Scan()
+	}
 	pjConn.Close()
 
 	return scanner.Text()

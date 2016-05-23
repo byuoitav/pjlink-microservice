@@ -20,7 +20,7 @@ func main() {
 	echoServer.Pre(middleware.RemoveTrailingSlash())
 
 	/*
-		err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/telnet-microservice/master/swagger.yml")
+		err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-service/master/swagger.yml")
 		if err != nil {
 			fmt.Printf("Could not load swagger.yaml file. Error: %s", err.Error())
 			panic(err)
