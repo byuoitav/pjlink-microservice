@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -28,18 +29,32 @@ func Test() (string, error) {
 	return "check yo head!", nil
 }
 
-func PjlinkRequest(address, port, class, pwd, command, param string) (PjResponse, error) {
+func HandleRequest(address, port, class, pwd, command, param string) (PjResponse, error) {
 	//example values:
-	//address = "10.1.1.3"
-	//port = "4352"
-	//pwd = "magic123"
-	//class = "1"
-	//command = "POWR"
-	//param = "?"
+	//Address = "10.1.1.3"
+	//Port = "4352"
+	//Pwd = "magic123"
+	//Class = "1"
+	//Command = "POWR"
+	//Param = "?"
 
 	request := PjRequest{address, port, class, pwd, command, param}
 
-	return parseResponse(sendRequest(request)), nil
+	error1 := validateRequest(request)
+
+	if error1 != nil {
+		return PjResponse{}, error1
+	} else {
+		return parseResponse(sendRequest(request)), nil
+	}
+}
+
+func validateRequest(request PjRequest) error {
+	if len(request.Command) != 4 {
+		return errors.New("your command doesn't have char length of 4")
+	} else {
+		return nil
+	}
 }
 
 func parseResponse(response string) PjResponse {

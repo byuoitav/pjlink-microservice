@@ -19,13 +19,12 @@ func Test(context echo.Context) error {
 }
 
 func PjlinkRequest(context echo.Context) error {
-	parsedResponse, err := helpers.PjlinkRequest(context.Param("address"),
+	parsedResponse, err := helpers.HandleRequest(context.Param("address"),
 		context.Param("port"), context.Param("class"), context.Param("passwd"),
 		context.Param("command"), context.Param("param"))
 
 	if err != nil {
-		//TODO
-		return err
+		return context.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return context.JSON(http.StatusOK, parsedResponse)
