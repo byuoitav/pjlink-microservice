@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	//"github.com/byuoitav/hateoas"
-	"pjlink/controllers"
+	"github.com/byuoitav/pjlink-service/controllers"
 
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"

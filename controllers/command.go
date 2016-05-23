@@ -3,7 +3,8 @@ package controllers
 import (
 	//"fmt"
 	"net/http"
-	"pjlink/helpers"
+
+	"github.com/byuoitav/pjlink-service/helpers"
 
 	"github.com/labstack/echo"
 )
