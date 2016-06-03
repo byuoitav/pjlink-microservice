@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	//"fmt"
+	"fmt"
 	"net/http"
+
+	"github.com/jessemillar/jsonresp"
 
 	"github.com/byuoitav/pjlink-service/helpers"
 
@@ -24,8 +26,10 @@ func PjlinkRequest(context echo.Context) error {
 		context.Param("command"), context.Param("param"))
 
 	if err != nil {
-		return context.JSON(http.StatusBadRequest, err.Error())
+		fmt.Println(err.Error())
+		return jsonresp.Create(context, http.StatusBadRequest, err.Error())
+		//return context.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		return context.JSON(http.StatusOK, parsedResponse)
 	}
-
-	return context.JSON(http.StatusOK, parsedResponse)
 }

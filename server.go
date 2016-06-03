@@ -2,8 +2,6 @@
 package main
 
 import (
-	"fmt"
-
 	//"github.com/byuoitav/hateoas"
 	"github.com/byuoitav/pjlink-service/controllers"
 
@@ -35,9 +33,4 @@ func main() {
 		"command/:command/param/:param", controllers.PjlinkRequest)
 
 	echoServer.Run(fasthttp.New(port))
-}
-
-func handleResponse(response string) {
-	//TODO do something with response
-	fmt.Println(response)
 }

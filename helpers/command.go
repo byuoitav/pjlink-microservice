@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 )
 
 type PjRequest struct {
@@ -29,10 +30,13 @@ func Test() (string, error) {
 	return "check yo head!", nil
 }
 
+//wrapper function for all handling activity
+//success: returns a populated PjResponse struct, nil error
+//failure: returns empty PjResponse struct, error
 func HandleRequest(address, port, class, pwd, command, param string) (PjResponse, error) {
 	//example values:
 	//Address = "10.1.1.3"
-	//Port = "4352"
+	//Port = "4352" - default pjlink port
 	//Pwd = "magic123"
 	//Class = "1"
 	//Command = "POWR"
@@ -42,13 +46,21 @@ func HandleRequest(address, port, class, pwd, command, param string) (PjResponse
 
 	error1 := validateRequest(request)
 
-	if error1 != nil {
+	if error1 != nil { //bad cmd, don't send
 		return PjResponse{}, error1
-	} else {
-		return parseResponse(sendRequest(request)), nil
+	} else { //send request and parse response into struct
+		response, error1 := sendRequest(request)
+		if error1 != nil {
+			return PjResponse{}, error1
+		} else {
+			fmt.Println("response received (unparsed): " + response)
+			return parseResponse(response), nil
+		}
 	}
 }
 
+//this function validates cmd length, before we send request.
+//as of now this function only tests for 4 chars, which is pjlink standard cmd length
 func validateRequest(request PjRequest) error {
 	if len(request.Command) != 4 {
 		return errors.New("your command doesn't have char length of 4")
@@ -57,26 +69,35 @@ func validateRequest(request PjRequest) error {
 	}
 }
 
+//handle and parse response
+//returns a populated PjResponse struct
 func parseResponse(response string) PjResponse {
 	//if password is wrong, response will be 'PJLINK ERRA'
-	fmt.Println(response)
 	if strings.Contains(response, "ERRA") {
+		//authentication failed and returned 'ERRA'
 		return PjResponse{"0", "ERRA", "0"}
-	} else {
+	} else { //authentication succeeded
 		//example response: "%1POWR=0"
-		fmt.Println(response)
-		//params are class, command, and response code, respectively
+		//returned params are class, command, and response code, respectively
 		return PjResponse{response[1:2], response[2:6], response[7:len(response)]}
 	}
-
 }
 
-func sendRequest(request PjRequest) string {
+//send pjlink request to device
+//success: returns response string, nil error
+//failure: returns empty string, error
+func sendRequest(request PjRequest) (string, error) {
 	//pjlink always uses tcp
 	protocol := "tcp"
 
 	//establish TCP connection with PJLink device
-	pjConn := connectToPjlink(protocol, request.Address, request.Port)
+	pjConn, error1 := connectToPjlink(protocol, request.Address, request.Port)
+	//fmt.Println("pjConn: " + pjConn.)
+
+	if error1 != nil {
+		//attempt to create a TCP socket with specified device failed
+		return "", error1
+	}
 
 	//setup scanner
 	scanner := bufio.NewScanner(pjConn)
@@ -92,8 +113,8 @@ func sendRequest(request PjRequest) string {
 
 	//verify PJLink and correct class
 	if !verifyPjlink(sResponse) {
-		fmt.Println("Not a PJLINK class 1 connection!")
-		//TODO handle not PJLink class 1
+		error := errors.New("Not a PJLINK class 1 connection!")
+		return "", error
 	}
 
 	strCmd := generateCmd(sResponse[2], request.Pwd, request.Class,
@@ -113,14 +134,17 @@ func sendRequest(request PjRequest) string {
 	}
 	pjConn.Close()
 
-	return scanner.Text()
+	return scanner.Text(), nil
 }
 
+//returns pjlink command string
 func generateCmd(seed, pjlinkPwd, pjlinkClass, pjlinkCmd, pjlinkParam string) string {
 	return createEncryptedMsg(seed, pjlinkPwd) + "%" + pjlinkClass + pjlinkCmd +
 		" " + pjlinkParam
 }
 
+//generates a hash given seed and password
+//returns string hash
 func createEncryptedMsg(seed, pjlinkPwd string) string {
 
 	//generate MD5
@@ -133,6 +157,9 @@ func createEncryptedMsg(seed, pjlinkPwd string) string {
 	return strHash
 }
 
+//verify we receive a pjlink class 1 response
+//success: returns true
+//failure: returns false
 func verifyPjlink(sResponse []string) bool {
 
 	if sResponse[0] != "PJLINK" {
@@ -146,10 +173,16 @@ func verifyPjlink(sResponse []string) bool {
 	return true
 }
 
-func connectToPjlink(protocolType, ip, port string) net.Conn {
-	pjlinkConn, err := net.Dial(protocolType, ip+":"+port)
+//attempts to establish a TCP socket with the specified IP:port
+//success: returns populated pjlinkConn struct and nil error
+//failure: returns empty pjlinkConn and error
+func connectToPjlink(protocolType, ip, port string) (net.Conn, error) {
+	timeout := 5 //represents seconds
+	pjlinkConn, err := net.DialTimeout(protocolType, ip+":"+port,
+		time.Duration(timeout)*time.Second)
 	if err != nil {
-		// TODO handle
+		return pjlinkConn, errors.New("failed to establish a connection with " +
+			"pjlink device. error msg: " + err.Error())
 	}
-	return pjlinkConn
+	return pjlinkConn, err
 }
