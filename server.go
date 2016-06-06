@@ -1,10 +1,9 @@
-// pjlinkService project main.go
 package main
 
 import (
-	//"github.com/byuoitav/hateoas"
-	"github.com/byuoitav/pjlink-microservice/controllers"
+	"fmt"
 
+	"github.com/byuoitav/pjlink-microservice/controllers"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
@@ -28,8 +27,7 @@ func main() {
 
 	router.Get("/health", health.Check)
 
-	router.Get("/address/:address/port/:port/class/:class/passwd/:passwd/"+
-		"command/:command/param/:param", controllers.PjlinkRequest)
+	router.Post("/command", controllers.Command)
 
 	fmt.Printf("The PJLink microservice is listening on %s\n", port)
 	router.Run(fasthttp.New(port))
