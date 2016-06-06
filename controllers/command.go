@@ -1,30 +1,27 @@
 package controllers
 
 import (
-	//"fmt"
 	"net/http"
 
 	"github.com/byuoitav/pjlink-microservice/helpers"
+	"github.com/jessemillar/jsonresp"
 
 	"github.com/labstack/echo"
 )
 
-func Test(context echo.Context) error {
-	response, err := helpers.Test()
+func PJLinkRequest(context echo.Context) error {
+	request := helpers.PJRequest{}
+
+	err := context.Bind(&request)
 	if err != nil {
-		return err
+		return jsonresp.Create(context, http.StatusBadRequest, "Could not read request body: "+err.Error())
 	}
 
-	return context.JSON(http.StatusOK, response)
-}
-
-func PjlinkRequest(context echo.Context) error {
-	parsedResponse, err := helpers.PjlinkRequest(context.Param("address"),
+	parsedResponse, err := helpers.PJLinkRequest(context.Param("address"),
 		context.Param("port"), context.Param("class"), context.Param("passwd"),
 		context.Param("command"), context.Param("param"))
-
 	if err != nil {
-		//TODO
+		// TODO
 		return err
 	}
 

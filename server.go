@@ -31,13 +31,8 @@ func main() {
 	router.Get("/health", health.Check)
 
 	router.Get("/address/:address/port/:port/class/:class/passwd/:passwd/"+
-		"command/:command/param/:param", controllers.PjlinkRequest)
+		"command/:command/param/:param", controllers.PJLinkRequest)
 
 	fmt.Printf("The PJLink microservice is listening on %s\n", port)
 	router.Run(fasthttp.New(port))
-}
-
-func handleResponse(response string) {
-	//TODO do something with response
-	fmt.Println(response)
 }
