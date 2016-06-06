@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net"
 	"strings"
+	"time"
 )
 
 type PJRequest struct {
@@ -30,12 +31,25 @@ func PJLinkRequest(request PJRequest) (PJResponse, error) {
 		return PJResponse{}, err
 	}
 
+	err = validateRequest(request)
+	if err != nil {
+		return PJResponse{}, err
+	}
+
 	parsedResponse, err := parseResponse(response)
 	if err != nil {
 		return PJResponse{}, err
 	}
 
 	return parsedResponse, nil
+}
+
+func validateRequest(request PJRequest) error {
+	if len(request.Command) != 4 { // 4 characters is standard command length for PJLink
+		return errors.New("Your command doesn't have character length of 4")
+	}
+
+	return nil
 }
 
 func parseResponse(response string) (PJResponse, error) {
@@ -49,7 +63,8 @@ func parseResponse(response string) (PJResponse, error) {
 
 func sendRequest(request PJRequest) (string, error) {
 	//establish TCP connection with PJLink device
-	connection, err := net.Dial("tcp", request.Address+":"+request.Port)
+	timeout := 5 //represents seconds
+	connection, err := net.DialTimeout("tcp", request.Address+":"+request.Port, time.Duration(timeout)*time.Second)
 	if err != nil {
 		return "", err
 	}
