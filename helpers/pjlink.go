@@ -20,9 +20,9 @@ type PJRequest struct {
 }
 
 type PJResponse struct {
-	Class   string `json:"class"`
-	Command string `json:"command"`
-	Code    string `json:"code"`
+	Class    string `json:"class"`
+	Command  string `json:"command"`
+	Response string `json:"response"`
 }
 
 func PJLinkRequest(request PJRequest) (PJResponse, error) {
@@ -58,12 +58,12 @@ func parseResponse(response string) (PJResponse, error) {
 		return PJResponse{}, errors.New("Incorrect password")
 	}
 
-	return PJResponse{Class: response[1:2], Command: response[2:6], Code: response[7:len(response)]}, nil
+	return PJResponse{Class: response[1:2], Command: response[2:6], Response: response[7:len(response)]}, nil
 }
 
 func sendRequest(request PJRequest) (string, error) {
 	//establish TCP connection with PJLink device
-	timeout := 5 //represents seconds
+	timeout := 5 // In seconds
 	connection, err := net.DialTimeout("tcp", request.Address+":"+request.Port, time.Duration(timeout)*time.Second)
 	if err != nil {
 		return "", err
@@ -84,7 +84,7 @@ func sendRequest(request PJRequest) (string, error) {
 	//verify PJLink and correct class
 	if !verifyPJLink(response) {
 		// TODO: Handle not PJLink class 1
-		return "", errors.New("Not a PJLINK class 1 connection!")
+		return "", errors.New("Not a PJLINK class 1 connection")
 	}
 
 	command := generateCommand(response[2], request)
@@ -99,8 +99,7 @@ func sendRequest(request PJRequest) (string, error) {
 }
 
 func generateCommand(seed string, request PJRequest) string {
-	return createEncryptedMessage(seed, request.Password) + "%" + request.Class + request.Command +
-		" " + request.Parameter
+	return createEncryptedMessage(seed, request.Password) + "%" + request.Class + request.Command + " " + request.Parameter
 }
 
 func createEncryptedMessage(seed, password string) string {

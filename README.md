@@ -6,11 +6,11 @@
 Send a `POST` request to the `/command` endpoint with a body similar to the following:
 ```
 {
-    "Address": "10.6.36.54",
-    "Port": "23",
-    "Class": 1,
-    "Password": "stuff",
-    "Command": "stuff",
-    "Parameter": "stuff"
+    "Address": "10.66.9.14",
+    "Port": "4352",
+    "Password": "sekret",
+    "Class": "1",
+    "Command": "INST",
+    "Parameter": "%3F"
 }
 ```
