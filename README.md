@@ -11,6 +11,6 @@ Send a `POST` request to the `/command` endpoint with a body similar to the foll
     "Password": "sekret",
     "Class": "1",
     "Command": "INST",
-    "Parameter": "%3F"
+    "Parameter": "?"
 }
 ```
