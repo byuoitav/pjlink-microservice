@@ -4,18 +4,18 @@ import (
 	"bufio"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"net"
 	"strings"
 )
 
 type PJRequest struct {
-	Address  string `json:"address"`
-	Port     string `json:"port"`
-	Class    string `json:"class"`
-	Password string `json:"pwd"`
-	Command  string `json:"command"`
-	Param    string `json:"param"`
+	Address   string `json:"address"`
+	Port      string `json:"port"`
+	Class     string `json:"class"`
+	Password  string `json:"password"`
+	Command   string `json:"command"`
+	Parameter string `json:"parameter"`
 }
 
 type PJResponse struct {
@@ -25,97 +25,88 @@ type PJResponse struct {
 }
 
 func PJLinkRequest(request PJRequest) (PJResponse, error) {
-	return parseResponse(sendRequest(request)), nil
-}
-
-func parseResponse(response string) PJResponse {
-	// If password is wrong, response will be 'PJLINK ERRA'
-	if strings.Contains(response, "ERRA") {
-		return PJResponse{"0", "ERRA", "0"}
+	response, err := sendRequest(request)
+	if err != nil {
+		return PJResponse{}, err
 	}
 
-	return PJResponse{Class: response[1:2], Command: response[2:6], Code: response[7:len(response)]}
+	parsedResponse, err := parseResponse(response)
+	if err != nil {
+		return PJResponse{}, err
+	}
+
+	return parsedResponse, nil
 }
 
-func sendRequest(request PJRequest) string {
-	//pjlink always uses tcp
-	protocol := "tcp"
+func parseResponse(response string) (PJResponse, error) {
+	// If password is wrong, response will be 'PJLINK ERRA'
+	if strings.Contains(response, "ERRA") {
+		return PJResponse{}, errors.New("Incorrect password")
+	}
 
+	return PJResponse{Class: response[1:2], Command: response[2:6], Code: response[7:len(response)]}, nil
+}
+
+func sendRequest(request PJRequest) (string, error) {
 	//establish TCP connection with PJLink device
-	pjConn := connectToPJLink(protocol, request.Address, request.Port)
+	connection, err := net.Dial("tcp", request.Address+":"+request.Port)
+	if err != nil {
+		return "", err
+	}
 
 	//setup scanner
-	scanner := bufio.NewScanner(pjConn)
+	scanner := bufio.NewScanner(connection)
 	scanner.Split(bufio.ScanWords)
 
-	sResponse := make([]string, 3)
+	response := make([]string, 3)
 
 	//grab initial response
 	for i := 0; i < 3; i++ {
 		scanner.Scan()
-		sResponse[i] = scanner.Text()
+		response[i] = scanner.Text()
 	}
 
 	//verify PJLink and correct class
-	if !verifyPJLink(sResponse) {
-		fmt.Println("Not a PJLINK class 1 connection!")
-		//TODO handle not PJLink class 1
+	if !verifyPJLink(response) {
+		// TODO: Handle not PJLink class 1
+		return "", errors.New("Not a PJLINK class 1 connection!")
 	}
 
-	strCmd := generateCmd(sResponse[2], request.Pwd, request.Class,
-		request.Command, request.Param)
-
-	//test
-	fmt.Println("sending: " + strCmd + "\n")
+	command := generateCommand(response[2], request)
 
 	//send command
-	pjConn.Write([]byte(strCmd + "\r"))
-
+	connection.Write([]byte(command + "\r"))
 	scanner.Scan()
 
-	//if authentication failed, we received 'PJLINK ERRA', so return 'ERRA'
-	if scanner.Text() == "PJLINK" {
-		scanner.Scan()
-	}
-	pjConn.Close()
+	connection.Close()
 
-	return scanner.Text()
+	return scanner.Text(), nil
 }
 
-func generateCmd(seed, pjlinkPwd, pjlinkClass, pjlinkCmd, pjlinkParam string) string {
-	return createEncryptedMsg(seed, pjlinkPwd) + "%" + pjlinkClass + pjlinkCmd +
-		" " + pjlinkParam
+func generateCommand(seed string, request PJRequest) string {
+	return createEncryptedMessage(seed, request.Password) + "%" + request.Class + request.Command +
+		" " + request.Parameter
 }
 
-func createEncryptedMsg(seed, pjlinkPwd string) string {
-
+func createEncryptedMessage(seed, password string) string {
 	//generate MD5
-	data := []byte(seed + pjlinkPwd)
+	data := []byte(seed + password)
 	hash := md5.Sum(data)
 
 	//cast to string
-	strHash := hex.EncodeToString(hash[:])
+	stringHash := hex.EncodeToString(hash[:])
 
-	return strHash
+	return stringHash
 }
 
-func verifyPJLink(sResponse []string) bool {
-
-	if sResponse[0] != "PJLINK" {
+func verifyPJLink(response []string) bool {
+	if response[0] != "PJLINK" {
 		return false
 	}
 
-	if sResponse[1] != "1" {
+	if response[1] != "1" {
 		return false
 	}
 
 	return true
-}
-
-func connectToPJLink(protocolType, ip, port string) net.Conn {
-	pjlinkConn, err := net.Dial(protocolType, ip+":"+port)
-	if err != nil {
-		// TODO handle
-	}
-	return pjlinkConn
 }
