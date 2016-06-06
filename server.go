@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/byuoitav/pjlink-microservice/controllers"
-
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
