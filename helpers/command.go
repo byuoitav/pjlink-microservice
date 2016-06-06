@@ -21,9 +21,9 @@ type PjRequest struct {
 }
 
 type PjResponse struct {
-	Class   string `json:"class"`
-	Command string `json:"command"`
-	Code    string `json:"code"`
+	Class   string   `json:class`
+	Command string   `json:command`
+	Params  []string `json: params`
 }
 
 func Test() (string, error) {
@@ -46,7 +46,7 @@ func HandleRequest(address, port, class, pwd, command, param string) (PjResponse
 
 	error1 := validateRequest(request)
 
-	if error1 != nil { //bad cmd, don't send
+	if error1 != nil { //malformed cmd, don't send
 		return PjResponse{}, error1
 	} else { //send request and parse response into struct
 		response, error1 := sendRequest(request)
@@ -75,11 +75,21 @@ func parseResponse(response string) PjResponse {
 	//if password is wrong, response will be 'PJLINK ERRA'
 	if strings.Contains(response, "ERRA") {
 		//authentication failed and returned 'ERRA'
-		return PjResponse{"0", "ERRA", "0"}
+		return PjResponse{"0", "ERRA", []string{"0"}}
 	} else { //authentication succeeded
 		//example response: "%1POWR=0"
 		//returned params are class, command, and response code, respectively
-		return PjResponse{response[1:2], response[2:6], response[7:len(response)]}
+
+		tokens := strings.Split(response, " ")
+		fmt.Printf("tokens: %v", tokens)
+
+		token0 := tokens[0]
+		class := token0[1:2]
+		command := token0[2:6]
+		param1 := token0[7:len(token0)]
+		params := []string{param1, tokens[1:len(tokens)]}
+
+		return PjResponse{tokens[0], tokens[1], tokens[2:len(tokens)]}
 	}
 }
 
@@ -101,23 +111,35 @@ func sendRequest(request PjRequest) (string, error) {
 
 	//setup scanner
 	scanner := bufio.NewScanner(pjConn)
-	scanner.Split(bufio.ScanWords)
 
-	sResponse := make([]string, 3)
-
-	//grab initial response
-	for i := 0; i < 3; i++ {
-		scanner.Scan()
-		sResponse[i] = scanner.Text()
+	// Define a split function that separates on carriage return (i.e '\r').
+	onCarriageReturn := func(data []byte, atEOF bool) (advance int, token []byte,
+		err error) {
+		for i := 0; i < len(data); i++ {
+			if data[i] == '\r' {
+				return i + 1, data[:i], nil
+			}
+		}
+		// There is one final token to be delivered, which may be the empty string.
+		// Returning bufio.ErrFinalToken here tells Scan there are no more tokens after this
+		// but does not trigger an error to be returned from Scan itself.
+		return 0, data, bufio.ErrFinalToken
 	}
 
+	scanner.Split(onCarriageReturn)
+	scanner.Scan()
+	sChallenge := strings.Split(scanner.Text(), " ")
+
+	//test
+	fmt.Printf("sChallenge: %v\n", sChallenge)
+
 	//verify PJLink and correct class
-	if !verifyPjlink(sResponse) {
+	if !verifyPjlink(sChallenge) {
 		error := errors.New("Not a PJLINK class 1 connection!")
 		return "", error
 	}
 
-	strCmd := generateCmd(sResponse[2], request.Pwd, request.Class,
+	strCmd := generateCmd(sChallenge[2], request.Pwd, request.Class,
 		request.Command, request.Param)
 
 	//test
@@ -128,13 +150,18 @@ func sendRequest(request PjRequest) (string, error) {
 
 	scanner.Scan()
 
-	//if authentication failed, we received 'PJLINK ERRA', so return 'ERRA'
-	if scanner.Text() == "PJLINK" {
-		scanner.Scan()
-	}
+	response := scanner.Text()
 	pjConn.Close()
 
-	return scanner.Text(), nil
+	fmt.Println("response: " + response)
+
+	if strings.Contains(response, "ERRA") {
+		//if authentication failed, we received 'PJLINK ERRA'
+		return response, errors.New(
+			"authentication failed; probably bad password. response:" + response)
+	} else {
+		return response, nil
+	}
 }
 
 //returns pjlink command string
@@ -157,16 +184,16 @@ func createEncryptedMsg(seed, pjlinkPwd string) string {
 	return strHash
 }
 
-//verify we receive a pjlink class 1 response
+//verify we receive a pjlink class 1 challenge
 //success: returns true
 //failure: returns false
-func verifyPjlink(sResponse []string) bool {
+func verifyPjlink(sChallenge []string) bool {
 
-	if sResponse[0] != "PJLINK" {
+	if sChallenge[0] != "PJLINK" {
 		return false
 	}
 
-	if sResponse[1] != "1" {
+	if sChallenge[1] != "1" {
 		return false
 	}
 

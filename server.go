@@ -5,6 +5,8 @@ import (
 	//"github.com/byuoitav/hateoas"
 	"github.com/byuoitav/pjlink-microservice/controllers"
 
+	"fmt"
+
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
