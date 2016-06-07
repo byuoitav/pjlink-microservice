@@ -133,10 +133,10 @@ func parseResponse(response string) (PJResponse, error) {
 		token0 := tokens[0]
 		param1 := []string{token0[7:len(token0)]}
 		paramsN := tokens[1:len(tokens)]
-		appended := append(param1, paramsN...)
+		params := append(param1, paramsN...)
 
 		return PJResponse{Class: token0[1:2], Command: token0[2:6],
-			Response: appended}, nil
+			Response: params}, nil
 	}
 }
 
