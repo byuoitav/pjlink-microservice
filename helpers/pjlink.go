@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -20,17 +21,17 @@ type PJRequest struct {
 }
 
 type PJResponse struct {
-	Class    string `json:"class"`
-	Command  string `json:"command"`
-	Response string `json:"response"`
+	Class    string   `json:"class"`
+	Command  string   `json:"command"`
+	Response []string `json:"response"`
 }
 
 //wrapper function for all handling activity
 //success: returns a populated PjResponse struct, nil error
 //failure: returns empty PjResponse struct, error
-func handleRequest(request PJRequest) (PJResponse, error) {
+func HandleRequest(request PJRequest) (PJResponse, error) {
 
-	validateError = validateRequest(request)
+	validateError := validateRequest(request)
 
 	if validateError != nil { //malformed command, don't send
 		return PJResponse{}, validateError
@@ -39,7 +40,7 @@ func handleRequest(request PJRequest) (PJResponse, error) {
 		if requestError != nil {
 			return PJResponse{}, requestError
 		} else {
-			return parseResponse(response), nil
+			return parseResponse(response)
 		}
 	}
 }
@@ -84,7 +85,7 @@ func sendRequest(request PJRequest) (string, error) {
 	challenge := strings.Split(scanner.Text(), " ")
 
 	//verify PJLink and correct class
-	if !verifyPJLink(response) {
+	if !verifyPJLink(challenge) {
 		// TODO: Handle not PJLink class 1
 		return "", errors.New("Not a PJLINK class 1 connection")
 	}
@@ -92,7 +93,7 @@ func sendRequest(request PJRequest) (string, error) {
 	stringCommand := generateCommand(challenge[2], request)
 
 	//send command
-	connection.Write([]byte(command + "\r"))
+	connection.Write([]byte(stringCommand + "\r"))
 	scanner.Scan() //grab response line
 
 	connection.Close()
@@ -107,13 +108,13 @@ func connectToPJLink(ip, port string) (net.Conn, error) {
 	protocol := "tcp" //PJLink always uses TCP
 	timeout := 5      //represents seconds
 
-	connection, connectionError := net.DialTimeout(protocolType, ip+":"+port,
+	connection, connectionError := net.DialTimeout(protocol, ip+":"+port,
 		time.Duration(timeout)*time.Second)
 	if connectionError != nil {
 		return connection, errors.New("failed to establish a connection with " +
 			"pjlink device. error msg: " + connectionError.Error())
 	}
-	return pjlinkConn, connectionError
+	return connection, connectionError
 }
 
 //handle and parse response
@@ -130,14 +131,13 @@ func parseResponse(response string) (PJResponse, error) {
 		fmt.Printf("tokens: %v", tokens)
 
 		token0 := tokens[0]
-		class := token0[1:2]
-		command := token0[2:6]
-		param1 := token0[7:len(token0)]
-		params := []string{param1, tokens[1:len(tokens)]}
+		param1 := []string{token0[7:len(token0)]}
+		paramsN := tokens[1:len(tokens)]
+		appended := append(param1, paramsN...)
 
-		return PJResponse{Class: response[1:2], Command: response[2:6], Response: response[7:len(response)]}, nil
+		return PJResponse{Class: token0[1:2], Command: token0[2:6],
+			Response: appended}, nil
 	}
-
 }
 
 //returns PJLink command string

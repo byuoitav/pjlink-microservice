@@ -16,7 +16,7 @@ func Command(context echo.Context) error {
 		return jsonresp.Create(context, http.StatusBadRequest, "Could not read request body: "+err.Error())
 	}
 
-	response, err := helpers.PJLinkRequest(request)
+	response, err := helpers.HandleRequest(request)
 	if err != nil {
 		return jsonresp.Create(context, http.StatusBadRequest, err.Error())
 	}
