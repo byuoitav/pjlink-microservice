@@ -1,6 +1,4 @@
-# pjlink-microservice
-
-![Circle CI Build Status](https://circleci.com/gh/byuoitav/pjlink-microservice/tree/master.svg?style=shield)
+# pjlink-microservice [![CircleCI](https://circleci.com/gh/byuoitav/pjlink-microservice.svg?style=svg)](https://circleci.com/gh/byuoitav/pjlink-microservice)
 
 [![View in Swagger](http://jessemillar.github.io/view-in-swagger-button/button.svg)](http://byuoitav.github.io/swagger-ui/?url=https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.yml)
 
@@ -9,7 +7,7 @@ are sent in JSON format. Responses are parsed from the initial response string a
 
 This service does not interpret PJLink responses; a separate micro-service should probably be written to provide more user-friendly mappings to PJLink commands and response codes. The complete PJLink specification can be found [here](http://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf)
 
-### Usage
+## Usage
 Send a `POST` request to the `/command` endpoint with a body similar to the following:
 ```
 {
