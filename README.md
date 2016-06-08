@@ -2,21 +2,23 @@
 
 ![Circle CI Build Status](https://circleci.com/gh/byuoitav/pjlink-microservice/tree/master.svg?style=shield)
 
-Provides a RESTful micro-service to interact with PJLink capable devices. Commands
+[![View in Swagger](http://jessemillar.github.io/view-in-swagger-button/button.svg)](http://byuoitav.github.io/swagger-ui/?url=https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.yml)
+
+Provides a REST API to interact with PJLink capable devices. Commands
 are sent in JSON format. Responses are parsed from the initial response string and returned in JSON format. 
 
-This service does not interpret PJLink responses; a separate micro-service should probably be written to provide more user-friendly mappings to PJLink commands and response codes. The complet PJLink specification can be found [here](http://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf)
+This service does not interpret PJLink responses; a separate micro-service should probably be written to provide more user-friendly mappings to PJLink commands and response codes. The complete PJLink specification can be found [here](http://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf)
 
 ### Usage
 Send a `POST` request to the `/command` endpoint with a body similar to the following:
 ```
 {
-    "Address": "10.66.9.14",
-    "Port": "4352",
-    "Password": "sekret",
-    "Class": "1",
-    "Command": "INST",
-    "Parameter": "?"
+    "address": "10.66.9.14",
+    "port": "4352",
+    "password": "sekret",
+    "class": "1",
+    "command": "INST",
+    "parameter": "?"
 }
 ```
 All fields specified in the request as shown in the above example are mandatory. The corresponding response for the request above will be something like:
