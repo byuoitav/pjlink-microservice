@@ -50,7 +50,7 @@ func HandleRequest(request PJRequest) (PJResponse, error) {
 func validateRequest(request PJRequest) error {
 	if len(request.Command) != 4 { // 4 characters is standard command length for PJLink
 		return errors.New("Your command doesn't have character length of 4")
-	} else { //authentication succeedded
+	} else { //authentication succeeded
 
 		return nil
 	}
