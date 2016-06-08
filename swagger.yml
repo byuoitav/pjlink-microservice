@@ -3,7 +3,9 @@ info:
   version: "0.1"
   title: "PJLink Microservice"
   description: "REST API to interact with PJLink enabled devices"
-  license: "Apache 2.0"
+  license: 
+    name: "Apache 2.0"
+	url: "http://www.apache.org/licenses/LICENSE-2.0"
 host: "avdocker.byu.edu"
 schemes:
 - "http"
