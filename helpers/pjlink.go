@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type PJRequest struct {
+type RawPJRequest struct {
 	Address   string `json:"address"`
 	Port      string `json:"port"`
 	Class     string `json:"class"`
@@ -20,7 +20,7 @@ type PJRequest struct {
 	Parameter string `json:"parameter"`
 }
 
-type PJResponse struct {
+type RawPJResponse struct {
 	Class    string   `json:"class"`
 	Command  string   `json:"command"`
 	Response []string `json:"response"`
@@ -29,16 +29,16 @@ type PJResponse struct {
 //wrapper function for all handling activity
 //success: returns a populated PjResponse struct, nil error
 //failure: returns empty PjResponse struct, error
-func HandleRequest(request PJRequest) (PJResponse, error) {
+func HandleRawRequest(request RawPJRequest) (RawPJResponse, error) {
 
 	validateError := validateRequest(request)
 
 	if validateError != nil { //malformed command, don't send
-		return PJResponse{}, validateError
+		return RawPJResponse{}, validateError
 	} else { //send request and parse response into struct
 		response, requestError := sendRequest(request)
 		if requestError != nil {
-			return PJResponse{}, requestError
+			return RawPJResponse{}, requestError
 		} else {
 			return parseResponse(response)
 		}
@@ -47,7 +47,7 @@ func HandleRequest(request PJRequest) (PJResponse, error) {
 
 //this function validates cmd length, before we send request.
 //as of now this function only tests for 4 chars, which is pjlink standard cmd length
-func validateRequest(request PJRequest) error {
+func validateRequest(request RawPJRequest) error {
 	if len(request.Command) != 4 { // 4 characters is standard command length for PJLink
 		return errors.New("Your command doesn't have character length of 4")
 	} else { //authentication succeeded
@@ -56,7 +56,7 @@ func validateRequest(request PJRequest) error {
 	}
 }
 
-func sendRequest(request PJRequest) (string, error) {
+func sendRequest(request RawPJRequest) (string, error) {
 	//establish TCP connection with PJLink device
 	connection, connectionError := connectToPJLink(request.Address, request.Port)
 
@@ -119,29 +119,29 @@ func connectToPJLink(ip, port string) (net.Conn, error) {
 
 //handle and parse response
 //returns a populated PJResponse struct
-func parseResponse(response string) (PJResponse, error) {
+func parseResponse(response string) (RawPJResponse, error) {
 	// If password is wrong, response will be 'PJLINK ERRA'
 	if strings.Contains(response, "ERRA") {
-		return PJResponse{}, errors.New("Incorrect password")
+		return RawPJResponse{}, errors.New("Incorrect password")
 	} else { //authentication succeeded
 		//example response: "%1POWR=0"
 		//returned params are class, command, and response code(s), respectively
 
 		tokens := strings.Split(response, " ")
-		fmt.Printf("tokens: %v", tokens)
+		fmt.Printf("tokens: %v\n", tokens)
 
 		token0 := tokens[0]
 		param1 := []string{token0[7:len(token0)]}
 		paramsN := tokens[1:len(tokens)]
 		params := append(param1, paramsN...)
 
-		return PJResponse{Class: token0[1:2], Command: token0[2:6],
+		return RawPJResponse{Class: token0[1:2], Command: token0[2:6],
 			Response: params}, nil
 	}
 }
 
 //returns PJLink command string
-func generateCommand(seed string, request PJRequest) string {
+func generateCommand(seed string, request RawPJRequest) string {
 	return createEncryptedMessage(seed, request.Password) + "%" +
 		request.Class + request.Command + " " + request.Parameter
 }

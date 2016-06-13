@@ -27,7 +27,7 @@ func main() {
 
 	router.Get("/health", health.Check)
 
-	router.Post("/command", controllers.Command)
+	router.Post("/raw", controllers.Raw)
 
 	fmt.Printf("The PJLink microservice is listening on %s\n", port)
 	router.Run(fasthttp.New(port))

@@ -8,15 +8,15 @@ import (
 	"github.com/labstack/echo"
 )
 
-func Command(context echo.Context) error {
-	request := helpers.PJRequest{}
+func Raw(context echo.Context) error {
+	request := helpers.RawPJRequest{}
 
 	err := context.Bind(&request)
 	if err != nil {
 		return jsonresp.Create(context, http.StatusBadRequest, "Could not read request body: "+err.Error())
 	}
 
-	response, err := helpers.HandleRequest(request)
+	response, err := helpers.HandleRawRequest(request)
 	if err != nil {
 		return jsonresp.Create(context, http.StatusBadRequest, err.Error())
 	}
