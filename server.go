@@ -6,7 +6,7 @@ import (
 	"github.com/byuoitav/pjlink-microservice/controllers"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/fasthttp"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -30,5 +30,5 @@ func main() {
 	router.Post("/raw", controllers.Raw)
 
 	fmt.Printf("The PJLink microservice is listening on %s\n", port)
-	router.Run(fasthttp.New(port))
+	router.Run(standard.New(port))
 }
