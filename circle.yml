@@ -2,15 +2,17 @@ machine:
   services:
     - docker
 
-dependencies:
+test:
   post:
-    - docker build -t byuoitav/pjlink-microservice:$CIRCLE_SHA1 .
-    - docker build -t byuoitav/pjlink-microservice:latest .
+    - ./coverage.sh
+    - bash <(curl -s https://codecov.io/bash)
 
 deployment:
   production:
     branch: master
     commands:
+      - docker build -t byuoitav/pjlink-microservice:$CIRCLE_SHA1 .
+      - docker build -t byuoitav/pjlink-microservice:latest .
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - docker push byuoitav/pjlink-microservice:$CIRCLE_SHA1
       - docker push byuoitav/pjlink-microservice:latest
