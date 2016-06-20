@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/byuoitav/pjlink-microservice/controllers"
+	"github.com/byuoitav/pjlink-microservice/handlers"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
@@ -15,22 +15,19 @@ func main() {
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
 
-	/*
-		err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.yml")
-		if err != nil {
-			fmt.Printf("Could not load swagger.yaml file. Error: %s", err.Error())
-			panic(err)
-		}
-	*/
+	// err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.json")
+	// if err != nil {
+	// 	log.Fatalln("Could not load swagger.json file. Error: " + err.Error())
+	// }
 
 	//router.Get("/", hateoas.RootResponse)
 
 	router.Get("/health", health.Check)
 
-	router.Post("/raw", controllers.Raw)
+	router.Post("/raw", handlers.Raw)
 
-	router.Post("/command", controllers.Command)
+	router.Post("/command", handlers.Command)
 
-	fmt.Printf("The PJLink microservice is listening on %s\n", port)
+	log.Println("The PJLink microservice is listening on " + port)
 	router.Run(fasthttp.New(port))
 }
