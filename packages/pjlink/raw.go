@@ -108,16 +108,17 @@ func parseRawResponse(response string) (PJResponse, error) {
 		return PJResponse{}, errors.New("Incorrect password")
 		//example response: "%1POWR=0"
 		//returned params are class, command, and response code(s), respectively
+	}
 
-		tokens := strings.Split(response, " ")
-		fmt.Printf("tokens: %v\n", tokens)
+	tokens := strings.Split(response, " ")
+	fmt.Printf("tokens: %v\n", tokens)
 
-		token0 := tokens[0]
-		param1 := []string{token0[7:len(token0)]}
-		paramsN := tokens[1:len(tokens)]
-		params := append(param1, paramsN...)
+	token0 := tokens[0]
+	param1 := []string{token0[7:len(token0)]}
+	paramsN := tokens[1:len(tokens)]
+	params := append(param1, paramsN...)
 
-		return PJResponse{Class: token0[1:2], Command: token0[2:6], Response: params}, nil
+	return PJResponse{Class: token0[1:2], Command: token0[2:6], Response: params}, nil
 }
 
 //returns PJLink command string
