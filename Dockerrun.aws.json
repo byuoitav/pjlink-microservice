@@ -5,7 +5,7 @@
         "Key": ".dockercfg"
     },
     "Image": {
-        "Name": "byuoitav/pjlink-microservice:latest",
+        "Name": "byuoitav/pjlink-microservice:<TAG>",
         "Update": "true"
     },
     "Ports": [{
