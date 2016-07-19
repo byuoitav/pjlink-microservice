@@ -1,4 +1,4 @@
-package helpers
+package pjlink
 
 import (
 	"bufio"
@@ -11,35 +11,18 @@ import (
 	"time"
 )
 
-//note that both a human readable and raw requests use this struct
-type PJRequest struct {
-	Address   string `json:"address"`
-	Port      string `json:"port"`
-	Class     string `json:"class"`
-	Password  string `json:"password"`
-	Command   string `json:"command"`
-	Parameter string `json:"parameter"`
-}
-
-type RawPJResponse struct {
-	Class    string   `json:"class"`
-	Command  string   `json:"command"`
-	Response []string `json:"response"`
-}
-
-//wrapper function for all handling activity
+//HandleRawRequest is a wrapper function for all handling activity
 //success: returns a populated PjResponse struct, nil error
 //failure: returns empty PjResponse struct, error
-func HandleRawRequest(request PJRequest) (RawPJResponse, error) {
-
+func HandleRawRequest(request PJRequest) (PJResponse, error) {
 	validateError := validateRawRequest(request)
 
 	if validateError != nil { //malformed command, don't send
-		return RawPJResponse{}, validateError
+		return PJResponse{}, validateError
 	} else { //send request and parse response into struct
 		response, requestError := sendRawRequest(request)
 		if requestError != nil {
-			return RawPJResponse{}, requestError
+			return PJResponse{}, requestError
 		} else {
 			return parseRawResponse(response)
 		}
@@ -51,10 +34,9 @@ func HandleRawRequest(request PJRequest) (RawPJResponse, error) {
 func validateRawRequest(request PJRequest) error {
 	if len(request.Command) != 4 { // 4 characters is standard command length for PJLink
 		return errors.New("Your command doesn't have character length of 4")
-	} else { //authentication succeeded
-
-		return nil
 	}
+
+	return nil
 }
 
 func sendRawRequest(request PJRequest) (string, error) {
@@ -120,25 +102,23 @@ func connectToPJLink(ip, port string) (net.Conn, error) {
 
 //handle and parse response
 //returns a populated PJResponse struct
-func parseRawResponse(response string) (RawPJResponse, error) {
+func parseRawResponse(response string) (PJResponse, error) {
 	// If password is wrong, response will be 'PJLINK ERRA'
-	if strings.Contains(response, "ERRA") {
-		return RawPJResponse{}, errors.New("Incorrect password")
-	} else { //authentication succeeded
+	if strings.Contains(response, "ERRA") { //if authentication succeeded
+		return PJResponse{}, errors.New("Incorrect password")
 		//example response: "%1POWR=0"
 		//returned params are class, command, and response code(s), respectively
-
-		tokens := strings.Split(response, " ")
-		fmt.Printf("tokens: %v\n", tokens)
-
-		token0 := tokens[0]
-		param1 := []string{token0[7:len(token0)]}
-		paramsN := tokens[1:len(tokens)]
-		params := append(param1, paramsN...)
-
-		return RawPJResponse{Class: token0[1:2], Command: token0[2:6],
-			Response: params}, nil
 	}
+
+	tokens := strings.Split(response, " ")
+	fmt.Printf("tokens: %v\n", tokens)
+
+	token0 := tokens[0]
+	param1 := []string{token0[7:len(token0)]}
+	paramsN := tokens[1:len(tokens)]
+	params := append(param1, paramsN...)
+
+	return PJResponse{Class: token0[1:2], Command: token0[2:6], Response: params}, nil
 }
 
 //returns PJLink command string
