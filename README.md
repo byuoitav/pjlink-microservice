@@ -1,6 +1,6 @@
 # pjlink-microservice [![CircleCI](https://circleci.com/gh/byuoitav/pjlink-microservice.svg?style=svg)](https://circleci.com/gh/byuoitav/pjlink-microservice)
 
-[![View in Swagger](http://jessemillar.github.io/view-in-swagger-button/button.svg)](http://byuoitav.github.io/swagger-ui/?url=https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.yml)
+[![View in Swagger](http://jessemillar.github.io/view-in-swagger-button/button.svg)](http://byuoitav.github.io/swagger-ui/?url=https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.json)
 
 Provides a REST API to interact with PJLink capable devices. Commands
 are sent in JSON format. Responses are parsed from the initial response string and returned in JSON format. 
