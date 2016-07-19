@@ -13,12 +13,12 @@ func Raw(context echo.Context) error {
 
 	requestError := context.Bind(&request)
 	if requestError != nil {
-		return jsonresp.Create(context, http.StatusBadRequest, "Could not read request body: "+requestError.Error())
+		return jsonresp.New(context, http.StatusBadRequest, "Could not read request body: "+requestError.Error())
 	}
 
 	response, responseError := helpers.HandleRawRequest(request)
 	if responseError != nil {
-		return jsonresp.Create(context, http.StatusBadRequest, responseError.Error())
+		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -29,12 +29,12 @@ func Command(context echo.Context) error {
 
 	requestError := context.Bind(&request)
 	if requestError != nil {
-		return jsonresp.Create(context, http.StatusBadRequest, "Could not read request body: "+requestError.Error())
+		return jsonresp.New(context, http.StatusBadRequest, "Could not read request body: "+requestError.Error())
 	}
 
 	response, responseError := helpers.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.Create(context, http.StatusBadRequest, responseError.Error())
+		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
 
 	return context.JSON(http.StatusOK, response)
