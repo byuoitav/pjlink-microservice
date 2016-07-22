@@ -9,7 +9,7 @@
         }
     },
     "host": "api.byu.edu:443",
-    "basePath": "/byuoitav-sony-control-microservice/0.1",
+    "basePath": "/byuoitav-pjlink-microservice/0.1",
     "schemes": [
         "https"
     ],
@@ -17,7 +17,7 @@
         "application/json"
     ],
     "paths": {
-        "/health": {
+        "/health": { 
             "get": {
                 "summary": "Check Service Health",
                 "description": "Returns information about the microservice's health.",
@@ -49,28 +49,69 @@
                 }
             }
         },
-        "/command": {
-            "post": {
-                "summary": "Send a PJLink command",
-                "description": "Send any type of PJLink command, including status queries",
-                "parameters": [{
-                    "name": "body",
-                    "description": "Contains address of device, password, and command",
-                    "in": "body",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/definitions/CommandRequest"
+		"/command" : {
+			"post": {
+				"summary": "Send a human-readable PJLink command",
+				"description": "Send a human-readable PJLink class 1 command",
+				"parameters": [
+					{
+						"name": "body",
+						"description": "Contains address of device, password and command in JSON",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/CommandRequest"
+						}
+					}
+				],
+				"tags": [
+					"Command"
+				],
+				"responses": {
+                    "200": {
+                        "description": "Device response received",
+                        "schema": {
+                            "$ref": "#/definitions/CommandResponse"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    },
+                    "500": {
+                        "$ref": "#/responses/500"
+                    },
+                    "501": {
+                        "$ref": "#/responses/503"
+                    },
+                    "default": {
+                        "$ref": "#/responses/default"
                     }
-                }],
+                }
+			}
+		},
+        "/raw": {
+            "post": {
+                "summary": "Send a raw PJLink command",
+                "description": "Send a raw PJLink class 1 command, including status queries",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "description": "Contains address of device, password, and command",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RawRequest"
+                        }
+                    }
+                ],
                 "tags": [
-                    "Command"
+                    "Raw"
                 ],
                 "responses": {
                     "200": {
                         "description": "Device response received",
                         "schema": {
-                            "type": "array",
-                            "$ref": "#/definitions/CommandResponse"
+                            "$ref": "#/definitions/RawResponse"
                         }
                     },
                     "401": {
@@ -126,7 +167,7 @@
                 }
             }
         },
-        "CommandRequest": {
+        "RawRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -155,7 +196,7 @@
                 }
             }
         },
-        "CommandResponse": {
+        "RawResponse": {
             "type": "object",
             "properties": {
                 "class": {
@@ -174,7 +215,56 @@
                     }
                 }
             }
-        }
+        },
+		"CommandRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "Hostname or IP address of device"
+                },
+                "port": {
+                    "type": "string",
+                    "description": "PJLink service port; typically 4352"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "PJLink password as set on device"
+                },
+                "class": {
+                    "type": "string",
+                    "description": "PJLink class"
+                },
+                "command": {
+                    "type": "string",
+                    "description": "human readable PJLink command (e.g. 'power')"
+                },
+                "parameter": {
+                    "type": "string",
+                    "description": "PJLink command parameter (e.g. 'query' to query status)"
+                }
+            }
+        },
+		"CommandResponse": {
+            "type": "object",
+            "properties": {
+                "class": {
+                    "type": "string",
+                    "description": "PJLink class response of device"
+                },
+                "command": {
+                    "type": "string",
+                    "description": "human readable PJLink command (e.g. 'power')"
+                },
+                "response": {
+                    "type": "array",
+                    "description": "one or more response values per command",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
     },
     "responses": {
         "401": {
