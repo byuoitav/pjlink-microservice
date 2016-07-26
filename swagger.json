@@ -3,7 +3,7 @@
     "info": {
         "version": "0.1",
         "title": "PJLink Microservice",
-        "description": "REST API to interact with PJLink enabled devices",
+        "description": "A RESTful API to interact with PJLink-enabled devices",
         "license": {
             "name": "Apache 2.0"
         }
@@ -50,6 +50,36 @@
             }
         },
         "/command": {
+            "get": {
+                "summary": "Use Microservice",
+                "description": "Returns information about the /command endpoint.",
+                "tags": [
+                    "FTP"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Endpoint information",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Response"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    },
+                    "500": {
+                        "$ref": "#/responses/500"
+                    },
+                    "503": {
+                        "$ref": "#/responses/503"
+                    },
+                    "default": {
+                        "$ref": "#/responses/default"
+                    }
+                }
+            },
             "post": {
                 "summary": "Send a human-readable PJLink command",
                 "description": "Send a human-readable PJLink class 1 command",
@@ -88,6 +118,36 @@
             }
         },
         "/raw": {
+            "get": {
+                "summary": "Use Microservice",
+                "description": "Returns information about the /raw endpoint.",
+                "tags": [
+                    "FTP"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Endpoint information",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Response"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    },
+                    "500": {
+                        "$ref": "#/responses/500"
+                    },
+                    "503": {
+                        "$ref": "#/responses/503"
+                    },
+                    "default": {
+                        "$ref": "#/responses/default"
+                    }
+                }
+            },
             "post": {
                 "summary": "Send a raw PJLink command",
                 "description": "Send a raw PJLink class 1 command, including status queries",

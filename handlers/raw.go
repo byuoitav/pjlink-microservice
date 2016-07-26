@@ -23,3 +23,7 @@ func Raw(context echo.Context) error {
 
 	return context.JSON(http.StatusOK, response)
 }
+
+func RawInfo(context echo.Context) error {
+	return jsonresp.New(context, http.StatusBadRequest, "Send a POST request to the /raw endpoint with a body including Address, Port, Class, Password, Command, and Parameter tokens")
+}

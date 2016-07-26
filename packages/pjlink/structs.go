@@ -1,6 +1,6 @@
 package pjlink
 
-//note that both a human readable and raw requests use this struct
+// Note that both human readable and raw requests use this struct
 type PJRequest struct {
 	Address   string `json:"address"`
 	Port      string `json:"port"`
