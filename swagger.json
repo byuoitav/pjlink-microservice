@@ -17,7 +17,7 @@
         "application/json"
     ],
     "paths": {
-        "/health": { 
+        "/health": {
             "get": {
                 "summary": "Check Service Health",
                 "description": "Returns information about the microservice's health.",
@@ -49,25 +49,23 @@
                 }
             }
         },
-		"/command" : {
-			"post": {
-				"summary": "Send a human-readable PJLink command",
-				"description": "Send a human-readable PJLink class 1 command",
-				"parameters": [
-					{
-						"name": "body",
-						"description": "Contains address of device, password and command in JSON",
-						"in": "body",
-						"required": true,
-						"schema": {
-							"$ref": "#/definitions/CommandRequest"
-						}
-					}
-				],
-				"tags": [
-					"Command"
-				],
-				"responses": {
+        "/command": {
+            "post": {
+                "summary": "Send a human-readable PJLink command",
+                "description": "Send a human-readable PJLink class 1 command",
+                "parameters": [{
+                    "name": "body",
+                    "description": "Contains address of device, password and command in JSON",
+                    "in": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/CommandRequest"
+                    }
+                }],
+                "tags": [
+                    "Command"
+                ],
+                "responses": {
                     "200": {
                         "description": "Device response received",
                         "schema": {
@@ -87,23 +85,21 @@
                         "$ref": "#/responses/default"
                     }
                 }
-			}
-		},
+            }
+        },
         "/raw": {
             "post": {
                 "summary": "Send a raw PJLink command",
                 "description": "Send a raw PJLink class 1 command, including status queries",
-                "parameters": [
-                    {
-                        "name": "body",
-                        "description": "Contains address of device, password, and command",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/RawRequest"
-                        }
+                "parameters": [{
+                    "name": "body",
+                    "description": "Contains address of device, password, and command",
+                    "in": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/RawRequest"
                     }
-                ],
+                }],
                 "tags": [
                     "Raw"
                 ],
@@ -216,7 +212,7 @@
                 }
             }
         },
-		"CommandRequest": {
+        "CommandRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -245,7 +241,7 @@
                 }
             }
         },
-		"CommandResponse": {
+        "CommandResponse": {
             "type": "object",
             "properties": {
                 "class": {
@@ -264,7 +260,7 @@
                     }
                 }
             }
-        },
+        }
     },
     "responses": {
         "401": {
