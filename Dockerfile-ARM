@@ -1,0 +1,17 @@
+FROM resin/armv7hf-debian-qemu
+
+RUN [ "cross-build-start" ]
+
+RUN apt-get update
+RUN apt-get -y upgrade
+
+RUN mkdir -p /go
+ADD . /go
+
+WORKDIR /go
+
+CMD ["/go/pjlink-microservice"]
+
+EXPOSE 8005
+
+RUN [ "cross-build-end" ]
