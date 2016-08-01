@@ -16,6 +16,7 @@ func main() {
 	port := ":8005"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
+	router.Use(middleware.CORS())
 
 	err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.json")
 	if err != nil {
