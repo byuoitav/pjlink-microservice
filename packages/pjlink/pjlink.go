@@ -72,6 +72,7 @@ func convertHumanRequestToRawRequest(request PJRequest) PJRequest {
 
 func convertRawResponseToHumanResponse(rawResponse PJResponse,
 	requestParameter string) (PJResponse, error) {
+	var convertError error
 
 	log.Printf("rawResponse: %+v", rawResponse)
 
@@ -85,6 +86,9 @@ func convertRawResponseToHumanResponse(rawResponse PJResponse,
 	case "power":
 		if requestParameter == "query" {
 			response.Response[0] = PowerQueryResponses[rawResponse.Response[0]]
+			if response.Response[0] == "" {
+				convertError = errors.New("unknown power response")
+			}
 		} else {
 			response.Response[0] = PowerResponses[rawResponse.Response[0]]
 		}
@@ -142,7 +146,7 @@ func convertRawResponseToHumanResponse(rawResponse PJResponse,
 		}
 	}
 
-	return response, nil
+	return response, convertError
 }
 
 func odd(number int) bool {
