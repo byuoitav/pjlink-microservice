@@ -30,6 +30,9 @@ func main() {
 	router.Get("/command", handlers.CommandInfo, wso2jwt.ValidateJWT())
 	router.Post("/command", handlers.Command, wso2jwt.ValidateJWT())
 
+	router.Get("/:address/power/on", handlers.PowerOn, wso2jwt.ValidateJWT())
+	router.Get("/:address/power/standby", handlers.PowerOff, wso2jwt.ValidateJWT())
+
 	log.Println("The PJLink microservice is listening on " + port)
 	server := fasthttp.New(port)
 	server.ReadBufferSize = 1024 * 10 // Needed to interface properly with WSO2
