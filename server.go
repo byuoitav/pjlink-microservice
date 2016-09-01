@@ -5,7 +5,7 @@ import (
 
 	"github.com/byuoitav/hateoas"
 	"github.com/byuoitav/pjlink-microservice/handlers"
-	"github.com/byuoitav/wso2jwt"
+	//"github.com/byuoitav/wso2jwt"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
@@ -25,13 +25,21 @@ func main() {
 
 	router.Get("/", hateoas.RootResponse)
 	router.Get("/health", health.Check)
-	router.Get("/raw", handlers.RawInfo, wso2jwt.ValidateJWT())
-	router.Post("/raw", handlers.Raw, wso2jwt.ValidateJWT())
-	router.Get("/command", handlers.CommandInfo, wso2jwt.ValidateJWT())
-	router.Post("/command", handlers.Command, wso2jwt.ValidateJWT())
+	router.Get("/raw", handlers.RawInfo)
+	router.Post("/raw", handlers.Raw)
+	router.Get("/command", handlers.CommandInfo)
+	router.Post("/command", handlers.Command)
 
-	router.Get("/:address/power/on", handlers.PowerOn, wso2jwt.ValidateJWT())
-	router.Get("/:address/power/standby", handlers.PowerOff, wso2jwt.ValidateJWT())
+	//standard endpoints
+
+	//router.Get("/:address/power/on", handlers.PowerOn, wso2jwt.ValidateJWT())
+	//router.Get("/:address/power/standby", handlers.PowerOff, wso2jwt.ValidateJWT())
+	router.Get("/:address/power/on", handlers.PowerOn)
+	router.Get("/:address/power/standby", handlers.PowerOff)
+	router.Get("/:address/display/blank", handlers.DisplayBlank)
+	router.Get("/:address/display/unblank", handlers.DisplayUnBlank)
+	router.Get("/:address/volume/mute", handlers.VolumeMute)
+	router.Get("/:address/volume/unmute", handlers.VolumeUnMute)
 
 	log.Println("The PJLink microservice is listening on " + port)
 	server := fasthttp.New(port)
