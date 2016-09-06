@@ -15,7 +15,6 @@ func PowerOn(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
-
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -25,7 +24,6 @@ func PowerOff(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
-
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -37,7 +35,6 @@ func DisplayBlank(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
-
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -47,7 +44,6 @@ func DisplayUnBlank(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
-
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -57,7 +53,6 @@ func VolumeMute(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
-
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -67,7 +62,16 @@ func VolumeUnMute(context echo.Context) error {
 	if responseError != nil {
 		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
 	}
+	return context.JSON(http.StatusOK, response)
+}
 
+func SetInputPort(context echo.Context) error {
+	request := formRequestFromEnvVars(context.Param("address"), "input",
+		context.Param("port"))
+	response, responseError := pjlink.HandleRequest(request)
+	if responseError != nil {
+		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+	}
 	return context.JSON(http.StatusOK, response)
 }
 
