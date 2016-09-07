@@ -5,7 +5,7 @@ import (
 
 	"github.com/byuoitav/hateoas"
 	"github.com/byuoitav/pjlink-microservice/handlers"
-	//"github.com/byuoitav/wso2jwt"
+	"github.com/byuoitav/wso2jwt"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
