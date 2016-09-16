@@ -9,6 +9,9 @@ are sent in JSON format. Responses are parsed from the initial response string a
 
 This service does not interpret PJLink responses; a separate micro-service should probably be written to provide more user-friendly mappings to PJLink commands and response codes. The complete PJLink specification can be found [here](http://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf)
 
+## Setup
+You need to set the `PJLINK_PORT` and `PJLINK_PASS` environment variables before running.
+
 ## Usage
 Send a `POST` request to the `/command` endpoint with a body similar to the following:
 ```
