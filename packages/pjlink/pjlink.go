@@ -65,7 +65,9 @@ func convertHumanRequestToRawRequest(request PJRequest) PJRequest {
 		rawPJRequest.Parameter = VersionRequests[request.Parameter]
 	}
 
-	log.Println(rawPJRequest)
+	//log.Println(rawPJRequest)
+	log.Printf("humanRequest: %+v", request)
+	log.Printf("rawRequest:   %+v", rawPJRequest)
 
 	return rawPJRequest
 }
