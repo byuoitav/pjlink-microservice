@@ -23,3 +23,4 @@ deployment:
       - docker push byuoitav/rpi-pjlink-microservice:$CIRCLE_SHA1
       - docker push byuoitav/rpi-pjlink-microservice:latest
       - ./deploy.sh $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1
+      - ./deploy-pi.sh
