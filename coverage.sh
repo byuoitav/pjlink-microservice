@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# This script gathers Go test results for uploading to codecov.io
+
 set -e
 echo "" > coverage.txt
 
