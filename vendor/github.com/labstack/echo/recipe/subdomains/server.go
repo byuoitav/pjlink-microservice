@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -65,15 +64,17 @@ func main() {
 	e.Any("/*", func(c echo.Context) (err error) {
 		req := c.Request()
 		res := c.Response()
-		host := hosts[req.Host()]
+		host := hosts[req.Host]
 
 		if host == nil {
 			err = echo.ErrNotFound
 		} else {
-			host.Echo.ServeHTTP(req, res)
+			host.Echo.ServeHTTP(res, req)
 		}
 
 		return
 	})
-	e.Run(standard.New(":1323"))
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

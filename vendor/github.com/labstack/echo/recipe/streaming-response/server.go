@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type (
@@ -37,10 +36,12 @@ func main() {
 			if err := json.NewEncoder(c.Response()).Encode(l); err != nil {
 				return err
 			}
-			c.Response().(http.Flusher).Flush()
+			c.Response().Flush()
 			time.Sleep(1 * time.Second)
 		}
 		return nil
 	})
-	e.Run(standard.New(":1323"))
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -83,5 +82,7 @@ func main() {
 	r.Use(middleware.JWTWithConfig(config))
 	r.GET("", restricted)
 
-	e.Run(standard.New(":1323"))
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

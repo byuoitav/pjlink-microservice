@@ -3,9 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 )
 
 func main() {
@@ -13,9 +12,12 @@ func main() {
 	// the file server for rice. "app" is the folder where the files come from.
 	assetHandler := http.FileServer(rice.MustFindBox("app").HTTPBox())
 	// serves the index.html from rice
-	e.GET("/", standard.WrapHandler(assetHandler))
+	e.GET("/", echo.WrapHandler(assetHandler))
 
 	// servers other static files
-	e.GET("/static/*", standard.WrapHandler(http.StripPrefix("/static/", assetHandler)))
-	e.Run(standard.New(":3000"))
+	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
+
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type (
@@ -35,7 +34,7 @@ func (s *Stats) Process(next echo.HandlerFunc) echo.HandlerFunc {
 		s.mutex.Lock()
 		defer s.mutex.Unlock()
 		s.RequestCount++
-		status := strconv.Itoa(c.Response().Status())
+		status := strconv.Itoa(c.Response().Status)
 		s.Statuses[status]++
 		return nil
 	}
@@ -51,7 +50,7 @@ func (s *Stats) Handle(c echo.Context) error {
 // ServerHeader middleware adds a `Server` header to the response.
 func ServerHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		c.Response().Header().Set(echo.HeaderServer, "Echo/2.0")
+		c.Response().Header().Set(echo.HeaderServer, "Echo/3.0")
 		return next(c)
 	}
 }
@@ -60,7 +59,7 @@ func main() {
 	e := echo.New()
 
 	// Debug mode
-	e.SetDebug(true)
+	e.Debug = true
 
 	//-------------------
 	// Custom middleware
@@ -79,5 +78,7 @@ func main() {
 	})
 
 	// Start server
-	e.Run(standard.New(":1323"))
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

@@ -11,19 +11,25 @@ import (
 
 func PowerOn(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "power", "power-on")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
 func PowerOff(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "power", "power-off")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -31,47 +37,61 @@ func PowerOff(context echo.Context) error {
 //a blank command both blanks and mutes
 func DisplayBlank(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "av-mute-on")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
 func DisplayUnBlank(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "av-mute-off")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
 func VolumeMute(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "audio-mute-on")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
 func VolumeUnMute(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "audio-mute-off")
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
 func SetInputPort(context echo.Context) error {
-	request := formRequestFromEnvVars(context.Param("address"), "input",
-		context.Param("port"))
+	request := formRequestFromEnvVars(context.Param("address"), "input", context.Param("port"))
+
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -84,5 +104,6 @@ func formRequestFromEnvVars(address, command, parameter string) pjlink.PJRequest
 		Command:   command,
 		Parameter: parameter,
 	}
+
 	return request
 }

@@ -13,20 +13,20 @@ func Command(context echo.Context) error {
 
 	requestError := context.Bind(&request)
 	if requestError != nil {
-		return jsonresp.New(context, http.StatusBadRequest,
-			"Could not read request body: "+requestError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, "Could not read request body: "+requestError.Error())
+		return nil
 	}
 
 	response, responseError := pjlink.HandleRequest(request)
 	if responseError != nil {
-		return jsonresp.New(context, http.StatusBadRequest, responseError.Error())
+		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
+		return nil
 	}
 
 	return context.JSON(http.StatusOK, response)
 }
 
 func CommandInfo(context echo.Context) error {
-	return jsonresp.New(context, http.StatusBadRequest, "Send a POST request to"+
-		"the /command endpoint with a body including Address, Port, Class,"+
-		"Password, Command, and Parameter tokens")
+	jsonresp.New(context.Response(), http.StatusBadRequest, "Send a POST request to the /command endpoint with a body including Address, Port, Class, Password, Command, and Parameter tokens")
+	return nil
 }

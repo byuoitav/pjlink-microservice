@@ -1,5 +1,7 @@
 package echo
 
+import "strings"
+
 type (
 	// Router is the registry of all registered routes for an `Echo` instance for
 	// request matching and URL path parameter parsing.
@@ -81,7 +83,7 @@ func (r *Router) Add(method, path string, h HandlerFunc) {
 			r.insert(method, path[:i], nil, pkind, ppath, pnames)
 		} else if path[i] == '*' {
 			r.insert(method, path[:i], nil, skind, "", nil)
-			pnames = append(pnames, "_*")
+			pnames = append(pnames, "*")
 			r.insert(method, path[:i+1], h, akind, ppath, pnames)
 			return
 		}
@@ -170,7 +172,15 @@ func (r *Router) insert(method, path string, h HandlerFunc, t kind, ppath string
 			if h != nil {
 				cn.addHandler(method, h)
 				cn.ppath = ppath
-				cn.pnames = pnames
+				if len(cn.pnames) == 0 { // Issue #729
+					cn.pnames = pnames
+				}
+				for i, n := range pnames {
+					// Param name aliases
+					if !strings.Contains(n, pnames[i]) {
+						cn.pnames[i] += "," + pnames[i]
+					}
+				}
 			}
 		}
 		return

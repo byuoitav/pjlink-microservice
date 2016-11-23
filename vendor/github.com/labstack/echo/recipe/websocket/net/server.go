@@ -5,13 +5,13 @@ import (
 	"log"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 	"golang.org/x/net/websocket"
 )
 
-func hello() websocket.Handler {
-	return websocket.Handler(func(ws *websocket.Conn) {
+func hello(c echo.Context) error {
+	websocket.Handler(func(ws *websocket.Conn) {
+		defer ws.Close()
 		for {
 			// Write
 			err := websocket.Message.Send(ws, "Hello, Client!")
@@ -27,14 +27,17 @@ func hello() websocket.Handler {
 			}
 			fmt.Printf("%s\n", msg)
 		}
-	})
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
 }
 
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.Static("../public"))
-	e.GET("/ws", standard.WrapHandler(hello()))
-	e.Run(standard.New(":1323"))
+	e.Static("/", "../public")
+	e.GET("/ws", hello)
+	if err := e.Start(":1323"); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
