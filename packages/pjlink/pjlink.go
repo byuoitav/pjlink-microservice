@@ -65,7 +65,6 @@ func convertHumanRequestToRawRequest(request PJRequest) PJRequest {
 		rawPJRequest.Parameter = VersionRequests[request.Parameter]
 	}
 
-	//log.Println(rawPJRequest)
 	log.Printf("humanRequest: %+v", request)
 	log.Printf("rawRequest:   %+v", rawPJRequest)
 
@@ -100,7 +99,11 @@ func convertRawResponseToHumanResponse(rawResponse PJResponse,
 		}
 		response.Response = interpretInputListInputs(rawResponse.Response)
 	case "input":
-		response.Response[0] = InputResponses[rawResponse.Response[0]]
+		if requestParameter == "query" {
+			response.Response[0] = InputQueryResponses[rawResponse.Response[0]]
+		} else {
+			response.Response[0] = InputResponses[rawResponse.Response[0]]
+		}
 	case "av-mute":
 		if requestParameter == "query" {
 			response.Response[0] = AVMuteQueryResponses[rawResponse.Response[0]]
@@ -147,6 +150,8 @@ func convertRawResponseToHumanResponse(rawResponse PJResponse,
 			response.Response = rawResponse.Response
 		}
 	}
+
+	log.Printf("humanResponse: %+v", response)
 
 	return response, convertError
 }
