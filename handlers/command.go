@@ -23,6 +23,11 @@ func Command(context echo.Context) error {
 		return nil
 	}
 
+	if (response.Response[0] == "unavailable time") || (response.Response[0] == "device failure") {
+		jsonresp.New(context.Response(), http.StatusInternalServerError, response.Response[0])
+		return nil
+	}
+
 	return context.JSON(http.StatusOK, response)
 }
 

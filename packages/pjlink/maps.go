@@ -108,7 +108,6 @@ var InputRequests = map[string]string{
 }
 
 var InputQueryResponses = map[string]string{
-	//<x><y> - handled by interpretInputQueryResponse() function
 	"11":   "rgb1",
 	"12":   "rgb2",
 	"13":   "rgb3",

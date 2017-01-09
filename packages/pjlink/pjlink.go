@@ -11,9 +11,9 @@ import (
 //fail: returns an empty PJResponse, and accompanying error message
 func HandleRequest(request PJRequest) (PJResponse, error) {
 	//first validate request before sending
-	validateError := validateHumanRequest(request)
-	if validateError != nil {
-		return PJResponse{}, errors.New("Not a valid request: " + validateError.Error())
+	validateRequestError := validateHumanRequest(request)
+	if validateRequestError != nil {
+		return PJResponse{}, errors.New("Not a valid request: " + validateRequestError.Error())
 	}
 
 	//convert raw PJLink request
