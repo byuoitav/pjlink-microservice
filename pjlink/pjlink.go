@@ -38,7 +38,6 @@ func convertHumanRequestToRawRequest(request PJRequest) PJRequest {
 		Address:  request.Address,
 		Port:     request.Port,
 		Password: request.Password,
-		Class:    request.Class,
 		Command:  HumanToRawCommands[request.Command],
 	}
 
@@ -219,11 +218,6 @@ func interpretInputListInputs(rawResponses []string) []string {
 }
 
 func validateHumanRequest(request PJRequest) error {
-	//class 1?
-	if request.Class != "1" {
-		return errors.New("only PJLink class 1 supported")
-	}
-
 	//valid PJLink class 1 command?
 	if HumanToRawCommands[request.Command] == "" {
 		return errors.New("'" + request.Command + "' is not a valid PJLink command.")

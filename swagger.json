@@ -238,10 +238,6 @@
                     "type": "string",
                     "description": "PJLink password as set on device"
                 },
-                "class": {
-                    "type": "string",
-                    "description": "PJLink class"
-                },
                 "command": {
                     "type": "string",
                     "description": "PJLink command (e.g. 'POWR')"
@@ -286,10 +282,6 @@
                 "password": {
                     "type": "string",
                     "description": "PJLink password as set on device"
-                },
-                "class": {
-                    "type": "string",
-                    "description": "PJLink class"
                 },
                 "command": {
                     "type": "string",
