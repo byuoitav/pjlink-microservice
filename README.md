@@ -13,7 +13,9 @@ This service does not interpret PJLink responses; a separate micro-service shoul
 You need to set the `PJLINK_PORT` and `PJLINK_PASS` environment variables before running.
 
 ## Usage
-Send a `POST` request to the `/command` endpoint with a body similar to the following:
+See [`server.go`](https://github.com/byuoitav/pjlink-microservice/blob/master/server.go) for human-readable endpoints.
+
+For more fine-grained control, send a `POST` request to the `/command` endpoint with a body similar to the following:
 ```
 {
     "address": "10.66.9.14",
