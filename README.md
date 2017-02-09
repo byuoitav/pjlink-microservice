@@ -19,7 +19,6 @@ Send a `POST` request to the `/command` endpoint with a body similar to the foll
     "address": "10.66.9.14",
     "port": "4352",
     "password": "sekret",
-    "class": "1",
     "command": "INST",
     "parameter": "?"
 }
