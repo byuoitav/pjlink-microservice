@@ -421,7 +421,6 @@ func helperCreateHumanRequest(humanCommand string, humanParameter string) PJRequ
 		Address:   "n/a",
 		Port:      "n/a",
 		Password:  "n/a",
-		Class:     "n/a",
 		Command:   humanCommand,
 		Parameter: humanParameter,
 	}
