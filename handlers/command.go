@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/byuoitav/pjlink-microservice/pjlink"
+	"github.com/byuoitav/pjlink-microservice/packages/pjlink"
 	"github.com/jessemillar/jsonresp"
 	"github.com/labstack/echo"
 )

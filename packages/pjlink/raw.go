@@ -29,10 +29,11 @@ func HandleRawRequest(request PJRequest) (PJResponse, error) {
 	}
 }
 
-//this function validates cmd length, before we send request. as of now this function only tests for 4 chars, which is pjlink standard cmd length
+//this function validates cmd length, before we send request.
+//as of now this function only tests for 4 chars, which is pjlink standard cmd length
 func validateRawRequest(request PJRequest) error {
 	if len(request.Command) != 4 { // 4 characters is standard command length for PJLink
-		return errors.New("Command does not have character length of 4")
+		return errors.New("Your command doesn't have character length of 4")
 	}
 
 	return nil
@@ -68,7 +69,8 @@ func sendRawRequest(request PJRequest) (string, error) {
 
 	//verify PJLink and correct class
 	if !verifyPJLink(challenge) {
-		return "", errors.New("Not a PJLink class 1 connection")
+		// TODO: Handle not PJLink class 1
+		return "", errors.New("Not a PJLINK class 1 connection")
 	}
 
 	stringCommand := generateCommand(challenge[2], request)
@@ -89,11 +91,12 @@ func connectToPJLink(ip, port string) (net.Conn, error) {
 	protocol := "tcp" //PJLink always uses TCP
 	timeout := 5      //represents seconds
 
-	connection, connectionError := net.DialTimeout(protocol, ip+":"+port, time.Duration(timeout)*time.Second)
+	connection, connectionError := net.DialTimeout(protocol, ip+":"+port,
+		time.Duration(timeout)*time.Second)
 	if connectionError != nil {
-		return connection, errors.New("Failed to establish a connection with " + "PJLink device; " + connectionError.Error())
+		return connection, errors.New("failed to establish a connection with " +
+			"pjlink device. error msg: " + connectionError.Error())
 	}
-
 	return connection, connectionError
 }
 
@@ -120,7 +123,8 @@ func parseRawResponse(response string) (PJResponse, error) {
 
 //returns PJLink command string
 func generateCommand(seed string, request PJRequest) string {
-	return createEncryptedMessage(seed, request.Password) + "%" + request.Command + " " + request.Parameter
+	return createEncryptedMessage(seed, request.Password) + "%" +
+		request.Class + request.Command + " " + request.Parameter
 }
 
 //generates a hash given seed and password
