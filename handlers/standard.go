@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/byuoitav/pjlink-microservice/pjlink"
+	"github.com/byuoitav/pjlink-microservice/packages/pjlink"
 	"github.com/jessemillar/jsonresp"
 	"github.com/labstack/echo"
 )
@@ -100,6 +100,7 @@ func formRequestFromEnvVars(address, command, parameter string) pjlink.PJRequest
 		Address:   address,
 		Port:      os.Getenv("PJLINK_PORT"),
 		Password:  os.Getenv("PJLINK_PASS"),
+		Class:     "1",
 		Command:   command,
 		Parameter: parameter,
 	}

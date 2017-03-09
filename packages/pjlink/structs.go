@@ -4,6 +4,7 @@ package pjlink
 type PJRequest struct {
 	Address   string `json:"address"`
 	Port      string `json:"port"`
+	Class     string `json:"class"`
 	Password  string `json:"password"`
 	Command   string `json:"command"`
 	Parameter string `json:"parameter"`
