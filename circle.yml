@@ -1,28 +1,58 @@
 machine:
     services:
         - docker
+    environment:
+        GOROOT: ""
+        GOPATH: "${HOME}/.go_project"
+        PATH: "${GOPATH}/bin:${PATH}"
+        BUILD_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
 
 dependencies:
-    post:
-        - rm -r ~/.gradle || true
+    pre:
+        - rm -rf ~/.go_workspace
+    override:
+        - mkdir -p ~/.go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}
+        - ln -s ${HOME}/${CIRCLE_PROJECT_REPONAME} ${HOME}/.go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+        - cd ~/.go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+        - go get -d -v
+
+compile:
+    override:
+        - cd $BUILD_PATH && go build -v
 
 test:
     override:
-        - go test -v -race $(go list ./... | grep -v /vendor/)
+        - cd $BUILD_PATH && go test -v -race $(go list ./... | grep -v /vendor/)
 
 deployment:
-    production:
+    development:
         branch: master
         commands:
-            - env GOOS=linux GOARCH=arm go build -v .
-            - docker build -f Dockerfile-ARM -t byuoitav/rpi-pjlink-microservice:$CIRCLE_SHA1 .
-            - docker build -f Dockerfile-ARM -t byuoitav/rpi-pjlink-microservice:latest .
-            - docker build -t byuoitav/pjlink-microservice:$CIRCLE_SHA1 .
-            - docker build -t byuoitav/pjlink-microservice:latest .
+            - cd $BUILD_PATH && env GOOS=linux GOARCH=arm go build -v -o ${CIRCLE_PROJECT_REPONAME}-arm
+            - docker build -f Dockerfile-ARM -t byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:development .
+            - docker build -f Dockerfile-development -t byuoitav/${CIRCLE_PROJECT_REPONAME}:development .
             - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            - docker push byuoitav/pjlink-microservice:$CIRCLE_SHA1
-            - docker push byuoitav/pjlink-microservice:latest
-            - docker push byuoitav/rpi-pjlink-microservice:$CIRCLE_SHA1
-            - docker push byuoitav/rpi-pjlink-microservice:latest
+            - docker push byuoitav/${CIRCLE_PROJECT_REPONAME}:development
+            - docker push byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:development
+            - ./deploy-pi.sh development
+    stage:
+        branch: stage
+        commands:
+            - cd $BUILD_PATH && env GOOS=linux GOARCH=arm go build -v -o ${CIRCLE_PROJECT_REPONAME}-arm
+            - docker build -f Dockerfile-ARM -t byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:stage .
+            - docker build --build-arg GITHUB_BRANCH=stage -f Dockerfile-branch -t byuoitav/${CIRCLE_PROJECT_REPONAME}:stage .
+            - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            - docker push byuoitav/${CIRCLE_PROJECT_REPONAME}:stage
+            - docker push byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:stage
+            - ./deploy-pi.sh stage
+    production:
+        branch: production
+        commands:
+            - cd $BUILD_PATH && env GOOS=linux GOARCH=arm go build -v -o ${CIRCLE_PROJECT_REPONAME}-arm
+            - docker build -f Dockerfile-ARM -t byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:latest .
+            - docker build --build-arg GITHUB_BRANCH=production -f Dockerfile-branch -t byuoitav/${CIRCLE_PROJECT_REPONAME}:latest .
+            - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            - docker push byuoitav/${CIRCLE_PROJECT_REPONAME}:latest
+            - docker push byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:latest
             - ./deploy.sh $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1
-            - ./deploy-pi.sh
+            - ./deploy-pi.sh production
