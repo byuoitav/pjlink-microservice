@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/byuoitav/pjlink-microservice/packages/pjlink"
+	"github.com/byuoitav/pjlink-microservice/pjlink"
 	"github.com/jessemillar/jsonresp"
 	"github.com/labstack/echo"
 )
