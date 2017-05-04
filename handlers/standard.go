@@ -33,6 +33,18 @@ func PowerOff(context echo.Context) error {
 	return context.JSON(http.StatusOK, response)
 }
 
+func GetPowerStatus(context echo.Context) error {
+
+	request := formRequestFromEnvVars(context.Param("address"), "power", "query")
+
+	response, err := pjlink.GetPowerStatus(request)
+	if err != nil {
+		return context.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, response)
+}
+
 //some projectors *panasonic - cough* only accept av mute, not just blank, so
 //a blank command both blanks and mutes
 func DisplayBlank(context echo.Context) error {
@@ -54,6 +66,17 @@ func DisplayUnBlank(context echo.Context) error {
 	if responseError != nil {
 		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
 		return nil
+	}
+
+	return context.JSON(http.StatusOK, response)
+}
+
+func GetBlankedStatus(context echo.Context) error {
+	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "query")
+
+	response, err := pjlink.GetBlankedStatus(request)
+	if err != nil {
+		return context.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return context.JSON(http.StatusOK, response)
