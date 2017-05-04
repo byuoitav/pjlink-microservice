@@ -46,6 +46,7 @@ func main() {
 	//status endpoints
 	secure.GET("/:address/power/status", handlers.GetPowerStatus)
 	secure.GET("/:address/display/status", handlers.GetBlankedStatus)
+	secure.GET("/:address/volume/mute/status", handlers.GetMuteStatus)
 
 	server := http.Server{
 		Addr:           port,

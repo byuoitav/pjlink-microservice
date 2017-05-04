@@ -106,6 +106,17 @@ func VolumeUnMute(context echo.Context) error {
 	return context.JSON(http.StatusOK, response)
 }
 
+func GetMuteStatus(context echo.Context) error {
+	request := formRequestFromEnvVars(context.Param("address"), "av-mute", "query")
+
+	response, err := pjlink.GetMuteStatus(request)
+	if err != nil {
+		return context.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, response)
+}
+
 func SetInputPort(context echo.Context) error {
 	request := formRequestFromEnvVars(context.Param("address"), "input", context.Param("port"))
 
