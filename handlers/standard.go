@@ -129,6 +129,17 @@ func SetInputPort(context echo.Context) error {
 	return context.JSON(http.StatusOK, response)
 }
 
+func GetCurrentInput(context echo.Context) error {
+	request := formRequestFromEnvVars(context.Param("address"), "input", "query")
+
+	response, err := pjlink.GetCurrentInput(request)
+	if err != nil {
+		return context.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, response)
+}
+
 func formRequestFromEnvVars(address, command, parameter string) pjlink.PJRequest {
 	request := pjlink.PJRequest{
 		Address:   address,
