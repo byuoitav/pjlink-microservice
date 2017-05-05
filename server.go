@@ -34,6 +34,7 @@ func main() {
 	secure.GET("/command", handlers.CommandInfo)
 	secure.POST("/command", handlers.Command)
 
+	//functionality endpoints
 	secure.GET("/:address/power/on", handlers.PowerOn)
 	secure.GET("/:address/power/standby", handlers.PowerOff)
 	secure.GET("/:address/display/blank", handlers.DisplayBlank)
@@ -41,6 +42,13 @@ func main() {
 	secure.GET("/:address/volume/mute", handlers.VolumeMute)
 	secure.GET("/:address/volume/unmute", handlers.VolumeUnMute)
 	secure.GET("/:address/input/:port", handlers.SetInputPort)
+
+	//status endpoints
+	secure.GET("/:address/power/status", handlers.GetPowerStatus)
+	secure.GET("/:address/display/status", handlers.GetBlankedStatus)
+	secure.GET("/:address/volume/mute/status", handlers.GetMuteStatus)
+	secure.GET("/:address/input/current", handlers.GetCurrentInput)
+	secure.GET("/:address/input/list", handlers.GetInputList)
 
 	server := http.Server{
 		Addr:           port,
