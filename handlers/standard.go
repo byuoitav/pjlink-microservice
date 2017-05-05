@@ -140,6 +140,17 @@ func GetCurrentInput(context echo.Context) error {
 	return context.JSON(http.StatusOK, response)
 }
 
+func GetInputList(context echo.Context) error {
+	request := formRequestFromEnvVars(context.Param("address"), "input-list", "query")
+
+	response, err := pjlink.GetInputList(request)
+	if err != nil {
+		return context.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, response)
+}
+
 func formRequestFromEnvVars(address, command, parameter string) pjlink.PJRequest {
 	request := pjlink.PJRequest{
 		Address:   address,
