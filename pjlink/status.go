@@ -1,35 +1,19 @@
 package pjlink
 
-import "strings"
+import (
+	"strings"
 
-type PowerStatus struct {
-	Power string `json:"power",omitempty`
-}
+	"github.com/byuoitav/av-api/status"
+)
 
-type BlankedStatus struct {
-	Blanked bool `json:"blanked",omitempty`
-}
-
-type MuteStatus struct {
-	Mute bool `json:"muted",omitempty`
-}
-
-type VideoInput struct {
-	Input string `json:"input",omitempty`
-}
-
-type InputList struct {
-	Inputs []string `json:"inputs",omitempty`
-}
-
-func GetPowerStatus(request PJRequest) (PowerStatus, error) {
+func GetPowerStatus(request PJRequest) (status.PowerStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return PowerStatus{}, err
+		return status.PowerStatus{}, err
 	}
 
-	var output PowerStatus
+	var output status.PowerStatus
 	if strings.EqualFold(response.Response[0], "power-on (lamp on)") {
 		output.Power = "on"
 	} else {
@@ -38,14 +22,14 @@ func GetPowerStatus(request PJRequest) (PowerStatus, error) {
 	return output, nil
 }
 
-func GetBlankedStatus(request PJRequest) (BlankedStatus, error) {
+func GetBlankedStatus(request PJRequest) (status.BlankedStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return BlankedStatus{}, err
+		return status.BlankedStatus{}, err
 	}
 
-	var output BlankedStatus
+	var output status.BlankedStatus
 	if strings.EqualFold(response.Response[0], "video and audio mute on") ||
 		strings.EqualFold(response.Response[0], "video mute on, audio mute off") {
 		output.Blanked = true
@@ -54,38 +38,45 @@ func GetBlankedStatus(request PJRequest) (BlankedStatus, error) {
 	return output, nil
 }
 
-func GetMuteStatus(request PJRequest) (MuteStatus, error) {
+func GetMuteStatus(request PJRequest) (status.MuteStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return MuteStatus{}, err
+		return status.MuteStatus{}, err
 	}
 
-	var output MuteStatus
+	var output status.MuteStatus
 	if strings.EqualFold(response.Response[0], "video and audio mute on") ||
 		strings.EqualFold(response.Response[0], "audio mute on, video mute off") {
-		output.Mute = true
+		output.Muted = true
 	}
 
 	return output, nil
 }
 
-func GetCurrentInput(request PJRequest) (VideoInput, error) {
+func GetCurrentInput(request PJRequest) (status.VideoInput, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return VideoInput{}, err
+		return status.VideoInput{}, err
 	}
 
-	return VideoInput{Input: response.Response[0]}, nil
+	return status.VideoInput{Input: response.Response[0]}, nil
 }
 
-func GetInputList(request PJRequest) (InputList, error) {
+func GetInputList(request PJRequest) (status.VideoList, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return InputList{}, err
+		return status.VideoList{}, err
 	}
 
-	return InputList{Inputs: response.Response}, nil
+	var output status.VideoList
+	for _, entry := range response.Response {
+
+		output.Inputs = append(output.Inputs, status.VideoInput{Input: entry})
+
+	}
+
+	return output, nil
 }
