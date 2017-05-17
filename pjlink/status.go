@@ -54,14 +54,14 @@ func GetMuteStatus(request PJRequest) (status.MuteStatus, error) {
 	return output, nil
 }
 
-func GetCurrentInput(request PJRequest) (status.VideoInput, error) {
+func GetCurrentInput(request PJRequest) (status.Input, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.VideoInput{}, err
+		return status.Input{}, err
 	}
 
-	return status.VideoInput{Input: response.Response[0]}, nil
+	return status.Input{Input: response.Response[0]}, nil
 }
 
 func GetInputList(request PJRequest) (status.VideoList, error) {
@@ -74,7 +74,7 @@ func GetInputList(request PJRequest) (status.VideoList, error) {
 	var output status.VideoList
 	for _, entry := range response.Response {
 
-		output.Inputs = append(output.Inputs, status.VideoInput{Input: entry})
+		output.Inputs = append(output.Inputs, status.Input{Input: entry})
 
 	}
 
