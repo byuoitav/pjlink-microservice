@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/byuoitav/authmiddleware"
@@ -13,11 +12,6 @@ import (
 )
 
 func main() {
-	err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.json")
-	if err != nil {
-		log.Fatalln("Could not load swagger.json file. Error: " + err.Error())
-	}
-
 	port := ":8005"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
