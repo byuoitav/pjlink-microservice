@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/byuoitav/authmiddleware"
@@ -13,11 +12,6 @@ import (
 )
 
 func main() {
-	err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/pjlink-microservice/master/swagger.json")
-	if err != nil {
-		log.Fatalln("Could not load swagger.json file. Error: " + err.Error())
-	}
-
 	port := ":8005"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
@@ -34,6 +28,14 @@ func main() {
 	secure.GET("/command", handlers.CommandInfo)
 	secure.POST("/command", handlers.Command)
 
+	//status endpoints
+	secure.GET("/:address/power/status", handlers.GetPowerStatus)
+	secure.GET("/:address/display/status", handlers.GetBlankedStatus)
+	secure.GET("/:address/volume/mute/status", handlers.GetMuteStatus)
+	secure.GET("/:address/input/current", handlers.GetCurrentInput)
+	secure.GET("/:address/input/list", handlers.GetInputList)
+
+	//functionality endpoints
 	secure.GET("/:address/power/on", handlers.PowerOn)
 	secure.GET("/:address/power/standby", handlers.PowerOff)
 	secure.GET("/:address/display/blank", handlers.DisplayBlank)
