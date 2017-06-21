@@ -35,6 +35,16 @@ deployment:
             - docker push byuoitav/${CIRCLE_PROJECT_REPONAME}:development
             - docker push byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:development
             - ./deploy-pi.sh development
+    testing:
+        branch: testing
+        commands:
+            - cd $BUILD_PATH && env GOOS=linux GOARCH=arm go build -v -o ${CIRCLE_PROJECT_REPONAME}-arm
+            - docker build -f Dockerfile-ARM -t byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:testing .
+            - docker build --build-arg GITHUB_BRANCH=testing -f Dockerfile-branch -t byuoitav/${CIRCLE_PROJECT_REPONAME}:testing .
+            - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            - docker push byuoitav/${CIRCLE_PROJECT_REPONAME}:testing
+            - docker push byuoitav/rpi-${CIRCLE_PROJECT_REPONAME}:testing
+            - ./deploy-pi.sh testing
     stage:
         branch: stage
         commands:
