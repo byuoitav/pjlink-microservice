@@ -23,10 +23,10 @@ func HandleRequest(request PJRequest) (PJResponse, error) {
 	if handleRawRequestError != nil {
 		return PJResponse{}, handleRawRequestError
 	} else {
-		response, error := convertRawResponseToHumanResponse(
+		response, err := convertRawResponseToHumanResponse(
 			rawResponse, request.Parameter)
-		if error != nil {
-			return PJResponse{}, error
+		if err != nil {
+			return PJResponse{}, err
 		} else {
 			return response, nil
 		}
