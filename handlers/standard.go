@@ -20,7 +20,7 @@ func PowerOn(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"on"})
 	}
 
@@ -36,7 +36,7 @@ func PowerOff(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"standby"})
 	}
 
@@ -66,7 +66,7 @@ func DisplayBlank(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{true})
 	}
 
@@ -82,7 +82,7 @@ func DisplayUnBlank(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{false})
 	}
 
@@ -109,7 +109,7 @@ func VolumeMute(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{true})
 	}
 
@@ -125,7 +125,7 @@ func VolumeUnMute(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{false})
 	}
 
@@ -152,11 +152,11 @@ func SetInputPort(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.Input{context.Param("port")})
 	}
 
-	return context.JSON(http.StatusOK, response)
+	return context.JSON(http.StatusInternalServerError, response)
 }
 
 func GetCurrentInput(context echo.Context) error {
