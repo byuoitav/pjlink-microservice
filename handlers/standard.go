@@ -152,7 +152,7 @@ func SetInputPort(context echo.Context) error {
 		return nil
 	}
 
-	if contains("success", response.Response) {
+	if contains("success", response.Response) || contains("OK", response.Response) {
 		return context.JSON(http.StatusOK, statusevaluators.Input{context.Param("port")})
 	}
 
