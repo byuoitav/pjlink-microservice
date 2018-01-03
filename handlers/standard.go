@@ -3,7 +3,9 @@ package handlers
 import (
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/pjlink-microservice/pjlink"
 	"github.com/jessemillar/jsonresp"
 	"github.com/labstack/echo"
@@ -18,7 +20,11 @@ func PowerOn(context echo.Context) error {
 		return nil
 	}
 
-	return context.JSON(http.StatusOK, response)
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"on"})
+	}
+
+	return context.JSON(http.StatusInternalServerError, response)
 }
 
 func PowerOff(context echo.Context) error {
@@ -28,6 +34,10 @@ func PowerOff(context echo.Context) error {
 	if responseError != nil {
 		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
 		return nil
+	}
+
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"standby"})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -56,6 +66,10 @@ func DisplayBlank(context echo.Context) error {
 		return nil
 	}
 
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{true})
+	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -66,6 +80,10 @@ func DisplayUnBlank(context echo.Context) error {
 	if responseError != nil {
 		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
 		return nil
+	}
+
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{false})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -91,6 +109,10 @@ func VolumeMute(context echo.Context) error {
 		return nil
 	}
 
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{true})
+	}
+
 	return context.JSON(http.StatusOK, response)
 }
 
@@ -101,6 +123,10 @@ func VolumeUnMute(context echo.Context) error {
 	if responseError != nil {
 		jsonresp.New(context.Response(), http.StatusBadRequest, responseError.Error())
 		return nil
+	}
+
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{false})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -126,7 +152,11 @@ func SetInputPort(context echo.Context) error {
 		return nil
 	}
 
-	return context.JSON(http.StatusOK, response)
+	if contains("success", response.Response) || contains("OK", response.Response) {
+		return context.JSON(http.StatusOK, statusevaluators.Input{context.Param("port")})
+	}
+
+	return context.JSON(http.StatusInternalServerError, response)
 }
 
 func GetCurrentInput(context echo.Context) error {
@@ -162,4 +192,16 @@ func formRequestFromEnvVars(address, command, parameter string) pjlink.PJRequest
 	}
 
 	return request
+}
+
+func contains(str string, list []string) bool {
+
+	for _, s := range list {
+
+		if strings.Contains(s, str) {
+			return true
+		}
+	}
+
+	return false
 }

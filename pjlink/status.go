@@ -3,17 +3,17 @@ package pjlink
 import (
 	"strings"
 
-	"github.com/byuoitav/av-api/status"
+	se "github.com/byuoitav/av-api/statusevaluators"
 )
 
-func GetPowerStatus(request PJRequest) (status.PowerStatus, error) {
+func GetPowerStatus(request PJRequest) (se.PowerStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.PowerStatus{}, err
+		return se.PowerStatus{}, err
 	}
 
-	var output status.PowerStatus
+	var output se.PowerStatus
 	if strings.EqualFold(response.Response[0], "power-on (lamp on)") {
 		output.Power = "on"
 	} else {
@@ -22,14 +22,14 @@ func GetPowerStatus(request PJRequest) (status.PowerStatus, error) {
 	return output, nil
 }
 
-func GetBlankedStatus(request PJRequest) (status.BlankedStatus, error) {
+func GetBlankedStatus(request PJRequest) (se.BlankedStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.BlankedStatus{}, err
+		return se.BlankedStatus{}, err
 	}
 
-	var output status.BlankedStatus
+	var output se.BlankedStatus
 	if strings.EqualFold(response.Response[0], "video and audio mute on") ||
 		strings.EqualFold(response.Response[0], "video mute on, audio mute off") {
 		output.Blanked = true
@@ -38,14 +38,14 @@ func GetBlankedStatus(request PJRequest) (status.BlankedStatus, error) {
 	return output, nil
 }
 
-func GetMuteStatus(request PJRequest) (status.MuteStatus, error) {
+func GetMuteStatus(request PJRequest) (se.MuteStatus, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.MuteStatus{}, err
+		return se.MuteStatus{}, err
 	}
 
-	var output status.MuteStatus
+	var output se.MuteStatus
 	if strings.EqualFold(response.Response[0], "video and audio mute on") ||
 		strings.EqualFold(response.Response[0], "audio mute on, video mute off") {
 		output.Muted = true
@@ -54,27 +54,27 @@ func GetMuteStatus(request PJRequest) (status.MuteStatus, error) {
 	return output, nil
 }
 
-func GetCurrentInput(request PJRequest) (status.Input, error) {
+func GetCurrentInput(request PJRequest) (se.Input, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.Input{}, err
+		return se.Input{}, err
 	}
 
-	return status.Input{Input: response.Response[0]}, nil
+	return se.Input{Input: response.Response[0]}, nil
 }
 
-func GetInputList(request PJRequest) (status.VideoList, error) {
+func GetInputList(request PJRequest) (se.VideoList, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return status.VideoList{}, err
+		return se.VideoList{}, err
 	}
 
-	var output status.VideoList
+	var output se.VideoList
 	for _, entry := range response.Response {
 
-		output.Inputs = append(output.Inputs, status.Input{Input: entry})
+		output.Inputs = append(output.Inputs, se.Input{Input: entry})
 
 	}
 
