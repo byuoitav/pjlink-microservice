@@ -9,5 +9,4 @@ COPY version.txt version.txt
 
 # add any required files/folders here
 
-ENTRYPOINT ./${name}-bin
-EXPOSE 8005
+ENTRYPOINT ["exec" "${name}-bin"]
