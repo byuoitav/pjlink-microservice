@@ -3,7 +3,6 @@ package pjlink
 import (
 	"strings"
 
-	se "github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/status"
 )
 
@@ -65,17 +64,17 @@ func GetCurrentInput(request PJRequest) (status.Input, error) {
 	return status.Input{Input: response.Response[0]}, nil
 }
 
-func GetInputList(request PJRequest) (se.VideoList, error) {
+func GetInputList(request PJRequest) ([]status.Input, error) {
 
 	response, err := HandleRequest(request)
 	if err != nil {
-		return se.VideoList{}, err
+		return []status.Input{}, err
 	}
 
-	var output se.VideoList
+	var output []status.Input
 	for _, entry := range response.Response {
 
-		output.Inputs = append(output.Inputs, status.Input{Input: entry})
+		output = append(output, status.Input{Input: entry})
 
 	}
 
