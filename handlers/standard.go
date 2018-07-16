@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/byuoitav/av-api/statusevaluators"
+	"github.com/byuoitav/common/status"
 	"github.com/byuoitav/pjlink-microservice/pjlink"
 	"github.com/jessemillar/jsonresp"
 	"github.com/labstack/echo"
@@ -21,7 +21,7 @@ func PowerOn(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"on"})
+		return context.JSON(http.StatusOK, status.Power{"on"})
 	}
 
 	return context.JSON(http.StatusInternalServerError, response)
@@ -37,7 +37,7 @@ func PowerOff(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.PowerStatus{"standby"})
+		return context.JSON(http.StatusOK, status.Power{"standby"})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -67,7 +67,7 @@ func DisplayBlank(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{true})
+		return context.JSON(http.StatusOK, status.Blanked{true})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -83,7 +83,7 @@ func DisplayUnBlank(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.BlankedStatus{false})
+		return context.JSON(http.StatusOK, status.Blanked{false})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -110,7 +110,7 @@ func VolumeMute(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{true})
+		return context.JSON(http.StatusOK, status.Mute{true})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -126,7 +126,7 @@ func VolumeUnMute(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.MuteStatus{false})
+		return context.JSON(http.StatusOK, status.Mute{false})
 	}
 
 	return context.JSON(http.StatusOK, response)
@@ -153,7 +153,7 @@ func SetInputPort(context echo.Context) error {
 	}
 
 	if contains("success", response.Response) || contains("OK", response.Response) {
-		return context.JSON(http.StatusOK, statusevaluators.Input{context.Param("port")})
+		return context.JSON(http.StatusOK, status.Input{context.Param("port")})
 	}
 
 	return context.JSON(http.StatusInternalServerError, response)
