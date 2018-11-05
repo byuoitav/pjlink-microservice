@@ -22,6 +22,7 @@ func main() {
 
 	router.GET("/", echo.WrapHandler(http.HandlerFunc(hateoas.RootResponse)))
 	router.GET("/health", echo.WrapHandler(http.HandlerFunc(health.Check)))
+	router.GET("/status", echo.WrapHandler(http.HandlerFunc(health.Check)))
 
 	secure.GET("/raw", handlers.RawInfo)
 	secure.POST("/raw", handlers.Raw)
