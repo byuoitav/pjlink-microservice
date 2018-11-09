@@ -60,7 +60,9 @@ ifneq "$(BRANCH)" "master"
 	# put vendored packages in here
 	# e.g. $(VENDOR) github.com/byuoitav/event-router-microservice
 	$(VENDOR) github.com/byuoitav/authmiddleware
+
 	$(VENDOR) github.com/byuoitav/common
+
 endif
 
 docker: docker-x86 docker-arm
