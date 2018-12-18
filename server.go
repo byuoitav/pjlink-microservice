@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/byuoitav/common"
 	"net/http"
+
+	"github.com/byuoitav/common"
+	"github.com/byuoitav/common/v2/auth"
 
 	"github.com/byuoitav/hateoas"
 	"github.com/byuoitav/pjlink-microservice/handlers"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -17,7 +18,7 @@ func main() {
 
 	// Use the `secure` routing group to require authentication
 	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
-	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress)
+	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
 
 	router.GET("/", echo.WrapHandler(http.HandlerFunc(hateoas.RootResponse)))
 	router.GET("/health", echo.WrapHandler(http.HandlerFunc(health.Check)))
