@@ -44,7 +44,6 @@ func PowerOff(context echo.Context) error {
 }
 
 func GetPowerStatus(context echo.Context) error {
-
 	request := formRequestFromEnvVars(context.Param("address"), "power", "query")
 
 	response, err := pjlink.GetPowerStatus(request)

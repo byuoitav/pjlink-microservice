@@ -1,0 +1,10 @@
+{
+    "name": "pjlink-microservice",
+    "port": ":8005",
+    "env-vars": [
+        "BYPASS_AUTH",
+        "PJLINK_PASS",
+        "PJLINK_PORT",
+        "ROOM_SYSTEM"
+    ]
+}
